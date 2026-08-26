@@ -197,7 +197,7 @@ def create_candidate(
         raise EvidenceError("IPA does not match the locked pre-upload identity")
     document = {
         "schemaVersion": 1,
-        "product": "fireball-webkit",
+        "product": "xanh-ios",
         "repository": repository,
         "commitSha": commit,
         "workflow": {
@@ -206,7 +206,7 @@ def create_candidate(
             "url": workflow_url(repository, run_id, attempt),
         },
         "app": {
-            "bundleIdentifier": "com.fireball.browser",
+            "bundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
             "marketingVersion": "0.1.0",
             "buildNumber": build,
         },
@@ -254,7 +254,7 @@ def validate_evidence(document):
     if (
         type(document["schemaVersion"]) is not int
         or document["schemaVersion"] != 1
-        or document["product"] != "fireball-webkit"
+        or document["product"] != "xanh-ios"
     ):
         raise EvidenceError("release evidence identity is invalid")
     repository = validate_repository(document["repository"])
@@ -270,7 +270,7 @@ def validate_evidence(document):
 
     app = document["app"]
     _require_keys(app, {"bundleIdentifier", "marketingVersion", "buildNumber"}, "app")
-    if app["bundleIdentifier"] != "com.fireball.browser":
+    if app["bundleIdentifier"] != "io.github.lamppkk.xanhbrowser.ios":
         raise EvidenceError("bundle identifier is invalid")
     if app["marketingVersion"] != "0.1.0":
         raise EvidenceError("marketing version is invalid")

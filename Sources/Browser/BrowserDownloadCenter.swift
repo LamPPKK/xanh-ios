@@ -86,7 +86,7 @@ enum BrowserDownloadError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .storageUnavailable: "Fireball could not prepare download storage."
+        case .storageUnavailable: "Xanh could not prepare download storage."
         case .itemUnavailable: "The download is no longer available."
         case .resumeUnavailable: "This server did not provide resumable download data."
         }
@@ -126,8 +126,8 @@ final class BrowserDownloadCenter {
             ?? fileManager.temporaryDirectory
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first
             ?? fileManager.temporaryDirectory
-        self.persistentRoot = persistentRoot ?? documents.appending(path: "Fireball Downloads", directoryHint: .isDirectory)
-        self.privateRoot = privateRoot ?? caches.appending(path: "Fireball Private Downloads", directoryHint: .isDirectory)
+        self.persistentRoot = persistentRoot ?? documents.appending(path: "Xanh Downloads", directoryHint: .isDirectory)
+        self.privateRoot = privateRoot ?? caches.appending(path: "Xanh Private Downloads", directoryHint: .isDirectory)
 
         prepareStorageAndRestoreFiles()
     }

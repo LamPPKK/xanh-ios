@@ -1,6 +1,6 @@
-# Fireball content-rule artifacts
+# Xanh content-rule artifacts
 
-Fireball derives its blocker data from EasyList and EasyPrivacy at the exact commit in `sources.json`. Both source lists are distributed under GPL-3.0-or-later; generated artifacts are published separately with their source commit, attribution, unsupported-rule report, checksum and signature.
+Xanh derives its blocker data from EasyList and EasyPrivacy at the exact commit in `sources.json`. Both source lists are distributed under GPL-3.0-or-later; generated artifacts are published separately with their source commit, attribution, unsupported-rule report, checksum and signature.
 
 The converter intentionally implements only a reviewed subset of Adblock Plus syntax. Unsupported exceptions, cosmetic filters and complex option combinations are reported rather than approximated. Each output shard is independently compiled by `WKContentRuleListStore`; the app activates a release only after every shard passes signature, checksum and compilation checks.
 

@@ -39,7 +39,7 @@ struct LibraryView: View {
 
     private var libraryContent: some View {
         ZStack {
-            Color.fireballBackground.ignoresSafeArea()
+            Color.xanhBackground.ignoresSafeArea()
             VStack(spacing: 0) {
                 Picker("Library section", selection: $section) {
                     ForEach(Section.allCases) { section in
@@ -202,13 +202,13 @@ struct LibraryView: View {
     private func libraryRowLabel(title: String, url: URL, icon: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundStyle(Color.fireballGreen)
+                .foregroundStyle(Color.xanhGreen)
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).lineLimit(1)
                 Text(url.absoluteString)
                     .font(.caption)
-                    .foregroundStyle(Color.fireballMuted)
+                    .foregroundStyle(Color.xanhMuted)
                     .lineLimit(1)
             }
         }
@@ -221,6 +221,6 @@ struct LibraryView: View {
         description: String = "Private activity never appears here."
     ) -> some View {
         ContentUnavailableView(title, systemImage: icon, description: Text(description))
-            .foregroundStyle(Color.fireballMuted)
+            .foregroundStyle(Color.xanhMuted)
     }
 }

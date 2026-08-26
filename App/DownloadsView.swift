@@ -7,20 +7,20 @@ struct DownloadsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.fireballBackground.ignoresSafeArea()
+                Color.xanhBackground.ignoresSafeArea()
                 if store.downloadCenter.items.isEmpty {
                     ScrollView {
                         VStack(spacing: 14) {
                             Image(systemName: "arrow.down.circle")
                                 .font(.system(size: 52, weight: .regular))
-                                .foregroundStyle(Color.fireballMuted)
+                                .foregroundStyle(Color.xanhMuted)
                                 .accessibilityHidden(true)
                             Text("No downloads")
                                 .font(.title2.weight(.bold))
-                                .foregroundStyle(Color.fireballCream)
+                                .foregroundStyle(Color.xanhCream)
                             Text("Files you download from regular tabs appear here. Private downloads are removed with their private space.")
                                 .font(.body)
-                                .foregroundStyle(Color.fireballMuted)
+                                .foregroundStyle(Color.xanhMuted)
                                 .multilineTextAlignment(.center)
                         }
                         .frame(maxWidth: 520)
@@ -38,7 +38,7 @@ struct DownloadsView: View {
                                 resume: { store.resumeDownload(item.id) },
                                 remove: { store.removeDownload(item.id) }
                             )
-                            .listRowBackground(Color.fireballPanel)
+                            .listRowBackground(Color.xanhPanel)
                             .accessibilityIdentifier("download.row")
                         }
                     }
@@ -64,15 +64,15 @@ struct DownloadsView: View {
 
     private var downloadSummary: some View {
         HStack(spacing: 12) {
-            FireballBrandMark(size: 36)
+            XanhBrandMark(size: 36)
             VStack(alignment: .leading, spacing: 3) {
                 Text("TRANSFER DECK")
                     .font(.caption.monospaced().weight(.black))
                     .tracking(1.1)
-                    .foregroundStyle(Color.fireballGreen)
+                    .foregroundStyle(Color.xanhGreen)
                 Text(summaryText)
                     .font(.subheadline)
-                    .foregroundStyle(Color.fireballMuted)
+                    .foregroundStyle(Color.xanhMuted)
             }
             Spacer()
         }
@@ -98,10 +98,10 @@ private struct DownloadRow: View {
             HStack(spacing: 12) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.fireballRaised)
+                        .fill(Color.xanhRaised)
                     Image(systemName: fileSymbol)
                         .font(.title3.weight(.semibold))
-                        .foregroundStyle(item.isPrivate ? Color.fireballOrange : Color.fireballGreen)
+                        .foregroundStyle(item.isPrivate ? Color.xanhLeaf : Color.xanhGreen)
                 }
                 .frame(width: 44, height: 44)
                 .accessibilityHidden(true)
@@ -121,7 +121,7 @@ private struct DownloadRow: View {
 
             if item.state == .downloading, let progress = item.progress {
                 ProgressView(progress)
-                    .tint(Color.fireballGreen)
+                    .tint(Color.xanhGreen)
                     .accessibilityLabel("Download progress")
             }
         }
@@ -140,7 +140,7 @@ private struct DownloadRow: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.bordered)
-            .tint(Color.fireballMuted)
+            .tint(Color.xanhMuted)
             .accessibilityLabel("Pause \(item.filename)")
         } else if item.canResume {
             Button(action: resume) {
@@ -148,8 +148,8 @@ private struct DownloadRow: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color.fireballGreen)
-            .foregroundStyle(Color.fireballBackground)
+            .tint(Color.xanhGreen)
+            .foregroundStyle(Color.xanhBackground)
             .accessibilityLabel("Resume \(item.filename)")
         } else if item.canShare {
             ShareLink(item: item.destinationURL) {
@@ -157,7 +157,7 @@ private struct DownloadRow: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.bordered)
-            .tint(Color.fireballGreen)
+            .tint(Color.xanhGreen)
             .accessibilityLabel("Share \(item.filename)")
         } else {
             Button(action: remove) {
@@ -165,7 +165,7 @@ private struct DownloadRow: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.bordered)
-            .tint(Color.fireballOrange)
+            .tint(Color.xanhLeaf)
             .accessibilityLabel("Remove \(item.filename)")
         }
     }
@@ -183,9 +183,9 @@ private struct DownloadRow: View {
 
     private var stateColor: Color {
         switch item.state {
-        case .completed: Color.fireballGreen
-        case .failed, .cancelled: Color.fireballOrange
-        case .downloading, .paused: Color.fireballMuted
+        case .completed: Color.xanhGreen
+        case .failed, .cancelled: Color.xanhLeaf
+        case .downloading, .paused: Color.xanhMuted
         }
     }
 }

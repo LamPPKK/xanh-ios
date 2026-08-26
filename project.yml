@@ -1,4 +1,4 @@
-name: FireballWebKit
+name: XanhIOS
 options:
   minimumXcodeGenVersion: 2.46.0
   deploymentTarget:
@@ -9,7 +9,7 @@ settings:
     SWIFT_STRICT_CONCURRENCY: targeted
     ENABLE_USER_SCRIPT_SANDBOXING: YES
 targets:
-  FireballWebKit:
+  XanhIOS:
     type: application
     platform: iOS
     sources:
@@ -19,64 +19,64 @@ targets:
         buildPhase: resources
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.fireball.browser
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.lamppkk.xanhbrowser.ios
         MARKETING_VERSION: 0.1.0
         CURRENT_PROJECT_VERSION: 1
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Config/Info.plist
-        FIREBALL_BLOCKER_MANIFEST_URL: https://lamppkk.github.io/fireball-webkit/blocker/manifest-v1.json
+        XANH_BLOCKER_MANIFEST_URL: https://lamppkk.github.io/xanh-ios/blocker/manifest-v1.json
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SUPPORTS_MACCATALYST: NO
         TARGETED_DEVICE_FAMILY: "1,2"
       configs:
         Debug:
           CODE_SIGNING_ALLOWED: NO
-          CODE_SIGN_ENTITLEMENTS: Config/FireballDebug.entitlements
-          FIREBALL_CLOUDKIT_ENABLED: NO
-          FIREBALL_BLOCKER_UPDATES_ENABLED: NO
+          CODE_SIGN_ENTITLEMENTS: Config/XanhDebug.entitlements
+          XANH_CLOUDKIT_ENABLED: NO
+          XANH_BLOCKER_UPDATES_ENABLED: NO
         Release:
           CODE_SIGNING_ALLOWED: YES
           CODE_SIGN_STYLE: Automatic
-          CODE_SIGN_ENTITLEMENTS: Config/FireballRelease.entitlements
-          FIREBALL_CLOUDKIT_ENABLED: YES
-          FIREBALL_BLOCKER_UPDATES_ENABLED: YES
-  FireballWebKitTests:
+          CODE_SIGN_ENTITLEMENTS: Config/XanhRelease.entitlements
+          XANH_CLOUDKIT_ENABLED: YES
+          XANH_BLOCKER_UPDATES_ENABLED: YES
+  XanhIOSTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - Tests
     dependencies:
-      - target: FireballWebKit
+      - target: XanhIOS
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.fireball.browser.tests
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.lamppkk.xanhbrowser.ios.tests
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGNING_ALLOWED: NO
-  FireballWebKitUITests:
+  XanhIOSUITests:
     type: bundle.ui-testing
     platform: iOS
     sources:
       - UITests
     dependencies:
-      - target: FireballWebKit
+      - target: XanhIOS
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.fireball.browser.uitests
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.lamppkk.xanhbrowser.ios.uitests
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGNING_ALLOWED: NO
 schemes:
-  FireballWebKit:
+  XanhIOS:
     build:
       targets:
-        FireballWebKit: all
-        FireballWebKitTests: [test]
+        XanhIOS: all
+        XanhIOSTests: [test]
     test:
       targets:
-        - FireballWebKitTests
-        - FireballWebKitUITests
+        - XanhIOSTests
+        - XanhIOSUITests
       environmentVariables:
-        FIREBALL_RULE_ARTIFACT_DIRECTORY: $(FIREBALL_RULE_ARTIFACT_DIRECTORY)
-        FIREBALL_BLOCKER_MANIFEST: $(FIREBALL_BLOCKER_MANIFEST)
-        FIREBALL_BLOCKER_ARTIFACT_DIRECTORY: $(FIREBALL_BLOCKER_ARTIFACT_DIRECTORY)
-        FIREBALL_BLOCKER_PUBLIC_KEY_BASE64: $(FIREBALL_BLOCKER_PUBLIC_KEY_BASE64)
-        FIREBALL_CAPTURE_MEDIA: $(FIREBALL_CAPTURE_MEDIA)
+        XANH_RULE_ARTIFACT_DIRECTORY: $(XANH_RULE_ARTIFACT_DIRECTORY)
+        XANH_BLOCKER_MANIFEST: $(XANH_BLOCKER_MANIFEST)
+        XANH_BLOCKER_ARTIFACT_DIRECTORY: $(XANH_BLOCKER_ARTIFACT_DIRECTORY)
+        XANH_BLOCKER_PUBLIC_KEY_BASE64: $(XANH_BLOCKER_PUBLIC_KEY_BASE64)
+        XANH_CAPTURE_MEDIA: $(XANH_CAPTURE_MEDIA)

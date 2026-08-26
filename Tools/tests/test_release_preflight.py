@@ -12,7 +12,7 @@ class ReleasePreflightTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.project = Path(self.directory.name) / "project.yml"
         self.project.write_text(
-            "PRODUCT_BUNDLE_IDENTIFIER: com.fireball.browser\nMARKETING_VERSION: 0.1.0\n"
+            "PRODUCT_BUNDLE_IDENTIFIER: io.github.lamppkk.xanhbrowser.ios\nMARKETING_VERSION: 0.1.0\n"
         )
         self.environment = {
             "CLOUDKIT_SCHEMA_PROMOTED": "true",

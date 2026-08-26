@@ -1,7 +1,7 @@
 import Foundation
 import Security
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 @MainActor
 final class SecureAccessTests: XCTestCase {

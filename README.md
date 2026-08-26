@@ -1,51 +1,25 @@
-# Fireball Browser for WebKit
+# Xanh iOS
 
-[![CI](https://github.com/LamPPKK/fireball-webkit/actions/workflows/ci.yml/badge.svg)](https://github.com/LamPPKK/fireball-webkit/actions/workflows/ci.yml)
+[![CI](https://github.com/LamPPKK/xanh-ios/actions/workflows/ci.yml/badge.svg)](https://github.com/LamPPKK/xanh-ios/actions/workflows/ci.yml)
 [![iOS 18+](https://img.shields.io/badge/iOS%20%2F%20iPadOS-18%2B-67F58A)](https://developer.apple.com/ios/)
-[![Version](https://img.shields.io/badge/version-0.1.0-F58547)](Release/TESTFLIGHT.md)
+[![Version](https://img.shields.io/badge/version-0.1.0-4DD46B)](Release/TESTFLIGHT.md)
 
-Fireball is a native SwiftUI browser shell around `WKWebView` for iPhone and iPad. It keeps WebKit's sandboxed process model, separates website data by profile, leaves private spaces out of restore, and ships without a telemetry SDK.
+Xanh iOS is the native SwiftUI member of the Xanh Browser family for iPhone and iPad. It keeps WebKit's sandboxed process model, separates website data by profile, leaves private spaces out of restore, and ships without a telemetry SDK.
 
-<img src="Brand/FireballMeteorMark.png" width="104" alt="Fireball meteor brand mark">
+<img src="Brand/XanhBrowserLogo.png" width="104" alt="Xanh Browser arrow mark">
 
-The detached meteor is the shared Fireball mark. WebKit turns that identity into
-a **quiet cosmic flight deck**: native SwiftUI sheets and controls, a floating
-bottom omnibox, adaptive iPad composition, Dynamic Type and 44-point-or-larger
-touch targets. Product tokens and component rules are recorded in
-[`design-system/fireball-webkit/MASTER.md`](design-system/fireball-webkit/MASTER.md)
-and [`pages/browser-shell.md`](design-system/fireball-webkit/pages/browser-shell.md).
+The centered four-arrow mark and a deep forest palette form the shared Xanh
+identity. The iOS app uses native SwiftUI sheets and controls, a floating bottom
+omnibox, adaptive iPad composition, Dynamic Type and 44-point-or-larger touch
+targets. Product tokens and component rules are recorded in
+[`design-system/xanh-ios/MASTER.md`](design-system/xanh-ios/MASTER.md)
+and [`pages/browser-shell.md`](design-system/xanh-ios/pages/browser-shell.md).
 
-<a href="docs/assets/fireball-webkit-showcase.png">
-  <img src="docs/assets/fireball-webkit-showcase.png" width="100%" alt="Fireball WebKit native home, tab grid, and privacy settings on iPhone">
-</a>
+Marketing version `0.1.0` · Bundle identifier `io.github.lamppkk.xanhbrowser.ios` · Default search Brave Search · External TestFlight candidate
 
-<sub>Native home · Profile/Space tab grid · Per-profile privacy settings. Open the image for the full-resolution showcase.</sub>
-
-Marketing version `0.1.0` · Bundle identifier `com.fireball.browser` · Default search Brave Search · External TestFlight candidate
-
-## Demo and screenshots
-
-[▶ Watch the 12-second Simulator demo](docs/assets/fireball-demo.mp4)
-
-The showcase above is a lossless contact sheet made from the three current
-iPhone captures below. Each original remains available at full resolution.
-
-| Native home | Tab grid | Privacy settings |
-| --- | --- | --- |
-| ![Fireball home on iPhone](docs/assets/fireball-iphone-home.png) | ![Fireball tab grid on iPhone](docs/assets/fireball-iphone-tabs.png) | ![Fireball settings on iPhone](docs/assets/fireball-iphone-settings.png) |
-
-| iPad home | Adaptive tab grid | iPad settings |
-| --- | --- | --- |
-| ![Fireball home on iPad](docs/assets/fireball-ipad-home.png) | ![Fireball adaptive tab grid on iPad](docs/assets/fireball-ipad-tabs.png) | ![Fireball settings on iPad](docs/assets/fireball-ipad-settings.png) |
-
-| iPhone transfer deck | iPad transfer deck |
-| --- | --- |
-| ![Fireball downloads on iPhone](docs/assets/fireball-iphone-downloads.png) | ![Fireball downloads on iPad](docs/assets/fireball-ipad-downloads.png) |
-
-The eight screenshots were captured by the opt-in XCTest media flow from the
-current app build on iPhone 16 and iPad (A16) iOS 18.6 Simulators; the MP4
-records the same browser flow separately. These files are documentation evidence,
-not a substitute for physical-device or TestFlight acceptance.
+The previous product screenshots were intentionally removed during the Xanh iOS
+rebrand. New previews must be captured from a verified Xanh build; this README
+does not relabel legacy captures as current evidence.
 
 ## What is implemented
 
@@ -61,17 +35,19 @@ not a substitute for physical-device or TestFlight acceptance.
 
 ### Browsing and resilience
 
+- `XanhWebView` is the application embedding boundary and implements the Apple adapter contract from Xanh WebView `0.1.0-alpha.1`.
+- The backend and fallback are both truthfully reported as Apple system `WKWebView`; Xanh iOS does not claim to bundle a custom iOS browser engine.
 - Bottom omnibox with Brave Search by default and DuckDuckGo, Google, or Bing per profile.
 - Back, Forward, Reload, Home, bookmarks managed from Library, native URL sharing, and focused-scene iPad keyboard commands.
 - URL policy admits HTTP and HTTPS while Apple Transport Security remains enforced. `mailto:` and `tel:` require confirmation; script, data, file, and custom schemes are blocked.
-- If WebKit terminates the active content process, Fireball retries once. A repeated failure stops the loop and offers explicit Reload or Open Home recovery for that exact tab. A terminated background session is discarded and recreated only when needed.
+- If WebKit terminates the active content process, Xanh retries once. A repeated failure stops the loop and offers explicit Reload or Open Home recovery for that exact tab. A terminated background session is discarded and recreated only when needed.
 
 ### Downloads
 
 - Native `WKDownload` handling for HTTP(S) and page-scoped `blob:` download links, `Content-Disposition: attachment`, and MIME types WebKit cannot display.
-- A Fireball transfer tray shows live system progress and supports pause, resume when the server supplies resume data, native sharing, and deletion.
-- Regular files live in `Fireball Downloads`, remain visible after relaunch, and are exposed through the iOS Files integration. Filename normalization and collision suffixes keep destinations inside that directory.
-- Private downloads use a cache-only directory, never enter browser persistence or CloudKit, and are removed when their private space closes or Fireball next launches.
+- A Xanh transfer tray shows live system progress and supports pause, resume when the server supplies resume data, native sharing, and deletion.
+- Regular files live in `Xanh Downloads`, remain visible after relaunch, and are exposed through the iOS Files integration. Filename normalization and collision suffixes keep destinations inside that directory.
+- Private downloads use a cache-only directory, never enter browser persistence or CloudKit, and are removed when their private space closes or Xanh next launches.
 - Media-link discovery and BitTorrent are desktop Blink workstreams; this WebKit beta does not claim either feature.
 
 ### Privacy and sync
@@ -80,22 +56,31 @@ not a substitute for physical-device or TestFlight acceptance.
 - Profiles, spaces, regular tabs, regular-tab Archive metadata, bookmarks, settings, and exact-host Shields exceptions may sync; cookies, cache, credentials, biometric state, snapshots, private tabs, and private-space exceptions never do.
 - Profile deletion commits its synced metadata tombstone before destructive work. Each device then uses a local-only retry ledger to remove that profile's `WKWebsiteDataStore` and Keychain lock on launch/foreground, including after an offline device later receives the tombstone; cleanup progress, cookies, cache, and lock material never enter CloudKit.
 - History sync is opt-in, disclosed before enabling, and limited to 90 days.
-- Per-profile signed content-blocker policy with last-known-good rollback and a Shields control in the omnibox. Site exceptions match only the exact hostname, remain isolated by profile, and apply on the next navigation or explicit reload so Fireball never destroys a form or media session without the user's action.
+- Per-profile signed content-blocker policy with last-known-good rollback and a Shields control in the omnibox. Site exceptions match only the exact hostname, remain isolated by profile, and apply on the next navigation or explicit reload so Xanh never destroys a form or media session without the user's action.
 - Optional profile lock through Keychain and LocalAuthentication, private-space foreground lock, and an app-switcher privacy cover.
 - No proprietary telemetry SDK and no default analytics upload.
+
+### Portable backup
+
+- Settings can export and import a versioned, portable JSON document containing regular profiles, spaces, tabs, Archive entries, bookmarks, history, settings and exact-host Shields exceptions.
+- The file is human-readable, unencrypted JSON and contains sensitive browsing data such as URLs, page titles and visit history. Keep exported files secure. “Portable” means a user-controlled Xanh iOS file; schema version 1 is not an Android backup or a general browser interchange format.
+- Import validates product/schema identity, engine-contract version, size and collection limits, UUID relationships, storage modes, canonical hostnames and HTTP(S) URLs before any state changes.
+- Unknown fields and fields associated with private, credential, cookie, cache or download data are rejected instead of being silently ignored.
+- Private and ephemeral state, Keychain credentials, URL credentials, cookies, cache, downloads, website data and local deletion-cleanup ledgers are excluded. Removing a regular profile from metadata during import uses a non-destructive synced tombstone, so it does not schedule deletion of that profile's existing website data or Keychain lock. A failed persistence write rolls the in-memory import back.
 
 ### Accessibility
 
 - 48-point minimum controls, Dynamic Type-aware layouts, VoiceOver labels and actions, and iPad hardware-keyboard navigation.
 - Automated accessibility audits cover browser chrome, tab grid, library, and settings on iPhone and iPad Simulator lanes.
 
-## Midori reference audit
+## Xanh reference audit
 
-The latest GitHub state of [`midori-android`](https://github.com/LamPPKK/midori-android) and [`midori-core`](https://github.com/LamPPKK/midori-core) was reviewed as reference material, not copied as implementation instructions.
+The latest GitHub state of [`xanh-android`](https://github.com/LamPPKK/xanh-android) and [`xanh-webkit`](https://github.com/LamPPKK/xanh-webkit) was reviewed as reference material, not copied as implementation instructions.
 
-This pass adopted two compatible ideas: native URL sharing and explicit WebKit content-process recovery. It did not import Firefox Sync/password-vault code, the iOS 26 `WebPage` API, Android System WebView/WPE adapters, or the portable-backup format into the 0.1 beta.
+This pass adopted native URL sharing, explicit WebKit content-process recovery and a separately validated Xanh portable-backup format. It did not import Firefox Sync/password-vault code, the iOS 26 `WebPage` API, or Android System WebView/WPE adapters.
 
-The exact source commits, decision ledger, and post-beta candidates are recorded in [the Midori reference audit](docs/MIDORI_REFERENCE.md).
+The exact source commits, decision ledger, and post-beta candidates are recorded in [the Xanh reference audit](docs/XANH_REFERENCE.md).
+CI validates both engine lock files against those pinned repositories and the truthful Apple adapter contract.
 
 ## Build and test
 
@@ -108,14 +93,14 @@ Requirements:
 ```sh
 xcodegen generate
 
-FIREBALL_IPHONE_UDID="$(DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+XANH_IPHONE_UDID="$(DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   python3 Tools/select_simulator.py --family iphone)"
 
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild test \
-  -project FireballWebKit.xcodeproj \
-  -scheme FireballWebKit \
-  -destination "platform=iOS Simulator,id=$FIREBALL_IPHONE_UDID" \
+  -project XanhIOS.xcodeproj \
+  -scheme XanhIOS \
+  -destination "platform=iOS Simulator,id=$XANH_IPHONE_UDID" \
   CODE_SIGNING_ALLOWED=NO
 
 python3 -m unittest discover -s Tools/tests
@@ -162,7 +147,7 @@ External Beta App Review, two-device iCloud isolation, physical-device accessibi
 WebKit remains the portfolio's release priority until this gate passes. Blink
 may continue protected-builder, provenance, policy, and other foundation work,
 but its Linux product promotion does not replace this TestFlight gate. XanhTab
-and `fireball-docker` follow their own hardware and OCI gates; their evidence
+and `xanh-docker` follow their own hardware and OCI gates; their evidence
 must not be presented as WebKit beta progress.
 
 ## Repository map
@@ -177,4 +162,4 @@ must not be presented as WebKit beta progress.
 | `Blocker/` | Signed blocker manifest schema, provenance, and bundled rules |
 | `Tests/`, `UITests/` | Unit, integration, accessibility, and documentation-media tests |
 | `Tools/` | Blocker, release, entitlement, IPA, and Simulator verification tools |
-| `docs/` | GitHub Pages, screenshots, demo, and architecture notes |
+| `docs/` | GitHub Pages and architecture notes; current screenshots are pending verified recapture |

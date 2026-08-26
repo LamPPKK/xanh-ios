@@ -5,7 +5,7 @@ from Tools.verify_entitlements import verify_entitlements
 
 class VerifyEntitlementsTests(unittest.TestCase):
     team_id = "A1B2C3D4E5"
-    bundle_id = "com.fireball.browser"
+    bundle_id = "io.github.lamppkk.xanhbrowser.ios"
 
     def expected_entitlements(self):
         application_identifier = f"{self.team_id}.{self.bundle_id}"
@@ -39,7 +39,7 @@ class VerifyEntitlementsTests(unittest.TestCase):
         entitlements = self.expected_entitlements()
         entitlements.update(
             {
-                "application-identifier": "OTHER.com.fireball.browser",
+                "application-identifier": "OTHER.io.github.lamppkk.xanhbrowser.ios",
                 "aps-environment": "development",
                 "get-task-allow": True,
                 "com.apple.developer.icloud-container-environment": "Development",

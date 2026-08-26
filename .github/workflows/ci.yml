@@ -16,30 +16,30 @@ jobs:
       - run: xcodegen generate
       - name: Select supported simulators
         run: |
-          printf 'FIREBALL_IPHONE_UDID=%s\n' "$(python3 Tools/select_simulator.py --family iphone)" >> "$GITHUB_ENV"
-          printf 'FIREBALL_IPAD_UDID=%s\n' "$(python3 Tools/select_simulator.py --family ipad)" >> "$GITHUB_ENV"
+          printf 'XANH_IPHONE_UDID=%s\n' "$(python3 Tools/select_simulator.py --family iphone)" >> "$GITHUB_ENV"
+          printf 'XANH_IPAD_UDID=%s\n' "$(python3 Tools/select_simulator.py --family ipad)" >> "$GITHUB_ENV"
       - name: Unit and accessibility UI tests on iPhone
         run: |
-          xcodebuild -project FireballWebKit.xcodeproj \
-            -scheme FireballWebKit \
-            -destination "platform=iOS Simulator,id=$FIREBALL_IPHONE_UDID" \
+          xcodebuild -project XanhIOS.xcodeproj \
+            -scheme XanhIOS \
+            -destination "platform=iOS Simulator,id=$XANH_IPHONE_UDID" \
             CODE_SIGNING_ALLOWED=NO test
       - name: Adaptive build on iPad
         run: |
-          xcodebuild -project FireballWebKit.xcodeproj \
-            -scheme FireballWebKit \
-            -destination "platform=iOS Simulator,id=$FIREBALL_IPAD_UDID" \
+          xcodebuild -project XanhIOS.xcodeproj \
+            -scheme XanhIOS \
+            -destination "platform=iOS Simulator,id=$XANH_IPAD_UDID" \
             CODE_SIGNING_ALLOWED=NO build
       - name: Accessibility and hardware-keyboard UI tests on iPad
         run: |
-          xcodebuild -project FireballWebKit.xcodeproj \
-            -scheme FireballWebKit \
-            -destination "platform=iOS Simulator,id=$FIREBALL_IPAD_UDID" \
-            -only-testing:FireballWebKitUITests/BrowserSmokeUITests/testBrowserChromePassesAccessibilityAudit \
-            -only-testing:FireballWebKitUITests/BrowserSmokeUITests/testTabGridPassesAccessibilityAudit \
-            -only-testing:FireballWebKitUITests/BrowserSmokeUITests/testLibraryPassesAccessibilityAudit \
-            -only-testing:FireballWebKitUITests/BrowserSmokeUITests/testSettingsPassesAccessibilityAudit \
-            -only-testing:FireballWebKitUITests/BrowserSmokeUITests/testIPadHardwareKeyboardCreatesTabAndFocusesAddressBar \
+          xcodebuild -project XanhIOS.xcodeproj \
+            -scheme XanhIOS \
+            -destination "platform=iOS Simulator,id=$XANH_IPAD_UDID" \
+            -only-testing:XanhIOSUITests/BrowserSmokeUITests/testBrowserChromePassesAccessibilityAudit \
+            -only-testing:XanhIOSUITests/BrowserSmokeUITests/testTabGridPassesAccessibilityAudit \
+            -only-testing:XanhIOSUITests/BrowserSmokeUITests/testLibraryPassesAccessibilityAudit \
+            -only-testing:XanhIOSUITests/BrowserSmokeUITests/testSettingsPassesAccessibilityAudit \
+            -only-testing:XanhIOSUITests/BrowserSmokeUITests/testIPadHardwareKeyboardCreatesTabAndFocusesAddressBar \
             CODE_SIGNING_ALLOWED=NO test
 
   blocker-tools:
@@ -47,7 +47,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: python3 -m unittest discover -s Tools/tests
-      - run: python3 -m py_compile Tools/blocker_release_version.py Tools/build_blocker.py Tools/create_blocker_manifest.py Tools/release_evidence.py Tools/release_preflight.py Tools/select_simulator.py Tools/verify_entitlements.py Tools/verify_ipa.py
+      - run: python3 Tools/verify_engine_locks.py
+      - run: python3 -m py_compile Tools/blocker_release_version.py Tools/build_blocker.py Tools/create_blocker_manifest.py Tools/release_evidence.py Tools/release_preflight.py Tools/select_simulator.py Tools/verify_engine_locks.py Tools/verify_entitlements.py Tools/verify_ipa.py
       - run: python3 Tools/release_evidence.py validate-corpus --input Release/evidence-v1.corpus.json
 
   configuration:

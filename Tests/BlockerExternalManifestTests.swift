@@ -1,15 +1,15 @@
 import Foundation
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 final class BlockerExternalManifestTests: XCTestCase {
     func testExternallySignedManifestMatchesAppCanonicalization() throws {
         let environment = ProcessInfo.processInfo.environment
-        guard let manifestPath = environment["FIREBALL_BLOCKER_MANIFEST"],
+        guard let manifestPath = environment["XANH_BLOCKER_MANIFEST"],
               !manifestPath.isEmpty,
-              let artifactDirectory = environment["FIREBALL_BLOCKER_ARTIFACT_DIRECTORY"],
+              let artifactDirectory = environment["XANH_BLOCKER_ARTIFACT_DIRECTORY"],
               !artifactDirectory.isEmpty,
-              let encodedKey = environment["FIREBALL_BLOCKER_PUBLIC_KEY_BASE64"],
+              let encodedKey = environment["XANH_BLOCKER_PUBLIC_KEY_BASE64"],
               !encodedKey.isEmpty else {
             throw XCTSkip("Cross-tool signature verification runs only in the protected blocker release workflow.")
         }

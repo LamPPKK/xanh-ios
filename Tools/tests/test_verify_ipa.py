@@ -20,16 +20,16 @@ class VerifyIPATests(unittest.TestCase):
         extra_files=None,
     ):
         directory = tempfile.TemporaryDirectory()
-        ipa = Path(directory.name) / "Fireball.ipa"
+        ipa = Path(directory.name) / "Xanh.ipa"
         info = {
-            "CFBundleIdentifier": "com.fireball.browser",
+            "CFBundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
             "CFBundleShortVersionString": "0.1.0",
             "CFBundleVersion": "42",
-            "CFBundleExecutable": "FireballWebKit",
+            "CFBundleExecutable": "XanhIOS",
             "MinimumOSVersion": "18.0",
-            "FireballCloudKitEnabled": "YES",
-            "FireballBlockerUpdatesEnabled": "YES",
-            "FireballBlockerManifestURL": REQUIRED_BLOCKER_MANIFEST_URL,
+            "XanhCloudKitEnabled": "YES",
+            "XanhBlockerUpdatesEnabled": "YES",
+            "XanhBlockerManifestURL": REQUIRED_BLOCKER_MANIFEST_URL,
             "UIBackgroundModes": ["remote-notification"],
             "UIApplicationSupportsIndirectInputEvents": True,
             "NSFaceIDUsageDescription": "Authenticate protected profiles.",
@@ -37,10 +37,10 @@ class VerifyIPATests(unittest.TestCase):
         }
         info.update(info_overrides or {})
         with zipfile.ZipFile(ipa, "w") as archive:
-            archive.writestr("Payload/FireballWebKit.app/Info.plist", plistlib.dumps(info))
-            archive.writestr("Payload/FireballWebKit.app/FireballWebKit", b"binary")
+            archive.writestr("Payload/XanhIOS.app/Info.plist", plistlib.dumps(info))
+            archive.writestr("Payload/XanhIOS.app/XanhIOS", b"binary")
             archive.writestr(
-                "Payload/FireballWebKit.app/blocker-public-key.txt",
+                "Payload/XanhIOS.app/blocker-public-key.txt",
                 base64.b64encode(blocker_key or self.release_key).decode(),
             )
             if include_privacy:
@@ -70,7 +70,7 @@ class VerifyIPATests(unittest.TestCase):
                 }
                 privacy.update(privacy_overrides or {})
                 archive.writestr(
-                    "Payload/FireballWebKit.app/PrivacyInfo.xcprivacy",
+                    "Payload/XanhIOS.app/PrivacyInfo.xcprivacy",
                     plistlib.dumps(privacy),
                 )
             for name, contents in (extra_files or {}).items():
@@ -82,7 +82,7 @@ class VerifyIPATests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         expected_key = base64.b64encode(self.release_key).decode()
         self.assertEqual(
-            verify_ipa(ipa, "com.fireball.browser", "0.1.0", "42", expected_key),
+            verify_ipa(ipa, "io.github.lamppkk.xanhbrowser.ios", "0.1.0", "42", expected_key),
             [],
         )
 
@@ -92,21 +92,21 @@ class VerifyIPATests(unittest.TestCase):
             include_privacy=False,
         )
         self.addCleanup(directory.cleanup)
-        errors = verify_ipa(ipa, "com.fireball.browser", "0.1.0", "42")
+        errors = verify_ipa(ipa, "io.github.lamppkk.xanhbrowser.ios", "0.1.0", "42")
         self.assertTrue(any("CFBundleIdentifier" in error for error in errors))
         self.assertTrue(any("PrivacyInfo.xcprivacy" in error for error in errors))
 
     def test_rejects_nonproduction_flags_and_wrong_release_key(self):
         directory, ipa = self.make_ipa(
             {
-                "FireballCloudKitEnabled": "NO",
-                "FireballBlockerUpdatesEnabled": "NO",
+                "XanhCloudKitEnabled": "NO",
+                "XanhBlockerUpdatesEnabled": "NO",
                 "UIDeviceFamily": [1],
             }
         )
         self.addCleanup(directory.cleanup)
         wrong_key = base64.b64encode(bytes(reversed(range(32)))).decode()
-        errors = verify_ipa(ipa, "com.fireball.browser", "0.1.0", "42", wrong_key)
+        errors = verify_ipa(ipa, "io.github.lamppkk.xanhbrowser.ios", "0.1.0", "42", wrong_key)
         self.assertTrue(any("CloudKit" in error for error in errors))
         self.assertTrue(any("blocker public key does not match" in error for error in errors))
         self.assertTrue(any("iPhone and iPad" in error for error in errors))
@@ -117,10 +117,10 @@ class VerifyIPATests(unittest.TestCase):
                 "NSPrivacyAccessedAPITypes": ["malformed"],
                 "NSPrivacyCollectedDataTypes": [],
             },
-            extra_files={"Payload/FireballWebKit.app/AuthKey_TEST.p8": "secret"},
+            extra_files={"Payload/XanhIOS.app/AuthKey_TEST.p8": "secret"},
         )
         self.addCleanup(directory.cleanup)
-        errors = verify_ipa(ipa, "com.fireball.browser", "0.1.0", "42")
+        errors = verify_ipa(ipa, "io.github.lamppkk.xanhbrowser.ios", "0.1.0", "42")
         self.assertTrue(any("UserDefaults reason" in error for error in errors))
         self.assertTrue(any("browsing history" in error for error in errors))
         self.assertTrue(any("sensitive key resources" in error for error in errors))

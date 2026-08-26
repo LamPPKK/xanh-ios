@@ -1,20 +1,34 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
+    private struct BackupNotice: Identifiable {
+        let id = UUID()
+        let message: String
+    }
+
     @Bindable var store: BrowserStore
     @Environment(\.dismiss) private var dismiss
     @State private var showHistoryConsent = false
     @State private var showDeleteProfile = false
+    @State private var backupDocument: XanhBackupDocument?
+    @State private var isExportingBackup = false
+    @State private var isImportingBackup = false
+    @State private var backupNotice: BackupNotice?
+    @State private var pendingBackupData: Data?
+    @State private var pendingBackupSummary = ""
+    @State private var showImportConfirmation = false
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.fireballBackground.ignoresSafeArea()
+                Color.xanhBackground.ignoresSafeArea()
                 ScrollView {
                     LazyVStack(spacing: 22) {
                         profileSection
                         privacySection
                         tabsSection
+                        backupSection
                         syncSection
                         aboutSection
                     }
@@ -55,7 +69,49 @@ struct SettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Fireball will remove the profile's tabs, Archive entries, bookmarks, history, Keychain lock and local WebKit website data.")
+                Text("Xanh will remove the profile's tabs, Archive entries, bookmarks, history, Keychain lock and local WebKit website data.")
+            }
+            .fileExporter(
+                isPresented: $isExportingBackup,
+                document: backupDocument,
+                contentType: .xanhPortableBackup,
+                defaultFilename: "Xanh-Backup"
+            ) { result in
+                switch result {
+                case let .success(url):
+                    backupNotice = BackupNotice(message: "Backup exported to \(url.lastPathComponent).")
+                case let .failure(error):
+                    backupNotice = BackupNotice(message: "Export failed: \(error.localizedDescription)")
+                }
+            }
+            .fileImporter(
+                isPresented: $isImportingBackup,
+                allowedContentTypes: [.xanhPortableBackup, .json],
+                allowsMultipleSelection: false
+            ) { result in
+                prepareBackupImport(result)
+            }
+            .confirmationDialog(
+                "Replace regular browser metadata?",
+                isPresented: $showImportConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Import and replace", role: .destructive) {
+                    confirmBackupImport()
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingBackupData = nil
+                    pendingBackupSummary = ""
+                }
+            } message: {
+                Text("\(pendingBackupSummary) The validated backup replaces regular metadata and may synchronize through iCloud. Private runtime state and website data are not changed.")
+            }
+            .alert(item: $backupNotice) { notice in
+                Alert(
+                    title: Text("Xanh backup"),
+                    message: Text(notice.message),
+                    dismissButton: .default(Text("OK"))
+                )
             }
         }
         .preferredColorScheme(.dark)
@@ -94,12 +150,12 @@ struct SettingsView: View {
                                 .multilineTextAlignment(.leading)
                             Spacer(minLength: 8)
                             Image(systemName: "chevron.up.chevron.down")
-                                .foregroundStyle(Color.fireballGreen)
+                                .foregroundStyle(Color.xanhGreen)
                         }
                         .padding(.horizontal, 14)
                         .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                         .background(
-                            Color.fireballRaised,
+                            Color.xanhRaised,
                             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
                         )
                     }
@@ -142,11 +198,11 @@ struct SettingsView: View {
     }
 
     private var syncSection: some View {
-        settingsSection("iCloud private database", index: "04") {
+        settingsSection("iCloud private database", index: "05") {
             settingsValue("Status", value: store.syncStatus.label)
             Text(store.syncStatus.detail)
                 .font(.body)
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
                 .fixedSize(horizontal: false, vertical: true)
             settingsButton(
                 store.settings.historySyncEnabled ? "Disable history sync" : "History sync",
@@ -160,7 +216,33 @@ struct SettingsView: View {
             }
             Text("Profiles, spaces, regular tabs, Archive metadata and bookmarks sync when iCloud is available. History is opt-in and retained for 90 days.")
                 .font(.body)
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var backupSection: some View {
+        settingsSection("Portable backup", index: "04") {
+            settingsButton("Export backup", systemImage: "square.and.arrow.up") {
+                do {
+                    backupDocument = XanhBackupDocument(data: try store.makePortableBackupData())
+                    isExportingBackup = true
+                } catch {
+                    backupNotice = BackupNotice(message: "Export failed: \(error.localizedDescription)")
+                }
+            }
+            .accessibilityIdentifier("settings.backup.export")
+            settingsButton("Import backup", systemImage: "square.and.arrow.down") {
+                isImportingBackup = true
+            }
+            .accessibilityIdentifier("settings.backup.import")
+            Text("The export is unencrypted JSON and contains browsing data such as URLs, page titles and history. Keep the file secure. It is a Xanh iOS backup, not an Android or general browser interchange format.")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(Color.xanhLeaf)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("Included: regular profiles, spaces, tabs, Archive, bookmarks, history, settings and Shields exceptions. Excluded: private data, credentials, cookies, cache, website data and downloads.")
+                .font(.body)
+                .foregroundStyle(Color.xanhMuted)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -177,27 +259,29 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
             .accessibilityIdentifier("settings.auto-archive")
 
-            Text("Inactive regular tabs move to Archive on launch or when Fireball enters the background. Active, pinned, Home and private tabs are never moved automatically.")
+            Text("Inactive regular tabs move to Archive on launch or when Xanh enters the background. Active, pinned, Home and private tabs are never moved automatically.")
                 .font(.body)
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
                 .fixedSize(horizontal: false, vertical: true)
             settingsValue("Archive retention", value: "30 days / 200 tabs per profile")
         }
     }
 
     private var aboutSection: some View {
-        settingsSection("About", index: "05") {
-            settingsValue("Application", value: "Fireball Browser")
+        settingsSection("About", index: "06") {
+            settingsValue("Application", value: "Xanh Browser")
             settingsValue("Version", value: "0.1.0")
+            settingsValue("Web engine", value: XanhWebView.engineInfo.displayValue)
+            settingsValue("Engine owner", value: XanhWebView.engineInfo.backendOwner)
             settingsLink(
                 "Privacy policy",
                 systemImage: "hand.raised",
-                destination: URL(string: "https://lamppkk.github.io/fireball-webkit/privacy.html")!
+                destination: URL(string: "https://lamppkk.github.io/xanh-ios/privacy.html")!
             )
             settingsLink(
                 "Support",
                 systemImage: "questionmark.circle",
-                destination: URL(string: "https://lamppkk.github.io/fireball-webkit/support.html")!
+                destination: URL(string: "https://lamppkk.github.io/xanh-ios/support.html")!
             )
         }
     }
@@ -208,14 +292,14 @@ struct SettingsView: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            FireballSectionLabel(title: title, index: index)
+            XanhSectionLabel(title: title, index: index)
             VStack(alignment: .leading, spacing: 16) {
                 content()
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                Color.fireballPanel,
+                Color.xanhPanel,
                 in: RoundedRectangle(cornerRadius: 14, style: .continuous)
             )
             .overlay {
@@ -231,7 +315,7 @@ struct SettingsView: View {
                 .font(.body.weight(.semibold))
             Text(value)
                 .font(.body)
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
         }
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: .combine)
@@ -289,5 +373,38 @@ struct SettingsView: View {
             get: { store.settings.automaticArchiveInterval },
             set: { store.setAutomaticArchiveInterval($0) }
         )
+    }
+
+    private func prepareBackupImport(_ result: Result<[URL], any Error>) {
+        do {
+            guard let url = try result.get().first else {
+                throw XanhPortableBackupError.emptyDocument
+            }
+            let hasSecurityScope = url.startAccessingSecurityScopedResource()
+            defer {
+                if hasSecurityScope { url.stopAccessingSecurityScopedResource() }
+            }
+            let data = try Data(contentsOf: url, options: .mappedIfSafe)
+            let snapshot = try XanhPortableBackup.decode(data)
+            pendingBackupData = data
+            pendingBackupSummary = "\(snapshot.profiles.count) profiles, \(snapshot.spaces.count) spaces and \(snapshot.tabs.count) tabs are ready to import."
+            showImportConfirmation = true
+        } catch {
+            backupNotice = BackupNotice(message: "Import failed: \(error.localizedDescription)")
+        }
+    }
+
+    private func confirmBackupImport() {
+        guard let pendingBackupData else { return }
+        defer {
+            self.pendingBackupData = nil
+            pendingBackupSummary = ""
+        }
+        do {
+            try store.importPortableBackupData(pendingBackupData)
+            backupNotice = BackupNotice(message: "Regular browser metadata was imported. Private browsing state and website data were not changed.")
+        } catch {
+            backupNotice = BackupNotice(message: "Import failed: \(error.localizedDescription)")
+        }
     }
 }

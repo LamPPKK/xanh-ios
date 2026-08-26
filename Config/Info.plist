@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Fireball Browser</string>
+	<string>Xanh Browser</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -20,22 +20,44 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>FireballBlockerManifestURL</key>
-	<string>$(FIREBALL_BLOCKER_MANIFEST_URL)</string>
-	<key>FireballBlockerUpdatesEnabled</key>
-	<string>$(FIREBALL_BLOCKER_UPDATES_ENABLED)</string>
-	<key>FireballCloudKitEnabled</key>
-	<string>$(FIREBALL_CLOUDKIT_ENABLED)</string>
+	<key>XanhBlockerManifestURL</key>
+	<string>$(XANH_BLOCKER_MANIFEST_URL)</string>
+	<key>XanhBlockerUpdatesEnabled</key>
+	<string>$(XANH_BLOCKER_UPDATES_ENABLED)</string>
+	<key>XanhCloudKitEnabled</key>
+	<string>$(XANH_CLOUDKIT_ENABLED)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Authenticate access to protected Fireball profiles.</string>
+	<string>Authenticate access to protected Xanh profiles.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Xanh portable browser backup</string>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.lamppkk.xanhbrowser.portable-backup</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>xanhbackup</string>
+				</array>
+				<key>public.mime-type</key>
+				<string>application/vnd.xanh.browser-backup+json</string>
+			</dict>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

@@ -1,11 +1,11 @@
 import WebKit
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 @MainActor
 final class BlockerArtifactCompilationTests: XCTestCase {
     func testGeneratedArtifactsCompile() async throws {
-        guard let directory = ProcessInfo.processInfo.environment["FIREBALL_RULE_ARTIFACT_DIRECTORY"],
+        guard let directory = ProcessInfo.processInfo.environment["XANH_RULE_ARTIFACT_DIRECTORY"],
               !directory.isEmpty else {
             throw XCTSkip("Generated blocker artifacts are compiled only in the protected blocker release workflow.")
         }

@@ -1,11 +1,11 @@
 # External TestFlight gate
 
-Fireball WebKit does not unlock Blink development until every required row below has evidence from the exact uploaded `0.1.0` IPA. A local or CI simulator pass is not a substitute for Apple Beta App Review or physical-device checks.
+Xanh iOS does not unlock downstream product promotion until every required row below has evidence from the exact uploaded `0.1.0` IPA. A local or CI simulator pass is not a substitute for Apple Beta App Review or physical-device checks.
 
 ## One-time Apple setup
 
-- Register `com.fireball.browser`. Stop if Apple does not accept that exact identifier.
-- Register `iCloud.com.fireball.browser` and enable CloudKit plus remote notifications.
+- Register `io.github.lamppkk.xanhbrowser.ios`. Stop if Apple does not accept that exact identifier.
+- Register `iCloud.io.github.lamppkk.xanhbrowser.ios` and enable CloudKit plus remote notifications.
 - Create the App Store Connect app record and an API key with permission to upload builds.
 - Exercise the CloudKit development schema, then promote that schema to production.
 - Add the five protected secrets named in `README.md` to the `testflight` GitHub environment.
@@ -68,7 +68,7 @@ Record pass/fail, device model, OS version, build number, tester, and evidence l
 | Cross-device profile deletion | Delete a locked profile while device two is offline; after reconnect and relaunch, metadata stays deleted and device two removes the matching WebKit store and local Keychain lock without exposing cleanup state through CloudKit |
 | Pinned tabs | Pin state persists and syncs, pinned tabs sort first, and automatic Archive never moves them |
 | Automatic Archive | Off/1/7/30-day policies move only inactive regular background tabs; active, pinned, Home, and private tabs remain open |
-| Cookie boundary | Website cookies do not appear in another profile or another device through Fireball sync |
+| Cookie boundary | Website cookies do not appear in another profile or another device through Xanh sync |
 | Private boundary | Private tabs, private Archive entries, history, snapshots, and restore state do not appear after relaunch or on device two |
 | History opt-in | URL sync starts only after the disclosure is accepted; records older than 90 days disappear |
 | Per-site Shields | Exact-host exception applies only after navigation/reload, does not include a subdomain, remains isolated by profile, syncs for regular profiles, and never syncs or restores for private spaces |

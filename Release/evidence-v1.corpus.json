@@ -6,21 +6,21 @@
       "valid": true,
       "document": {
         "schemaVersion": 1,
-        "product": "fireball-webkit",
-        "repository": "LamPPKK/fireball-webkit",
+        "product": "xanh-ios",
+        "repository": "LamPPKK/xanh-ios",
         "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "workflow": {
           "runId": 32434697404,
           "attempt": 1,
-          "url": "https://github.com/LamPPKK/fireball-webkit/actions/runs/32434697404/attempts/1"
+          "url": "https://github.com/LamPPKK/xanh-ios/actions/runs/32434697404/attempts/1"
         },
         "app": {
-          "bundleIdentifier": "com.fireball.browser",
+          "bundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
           "marketingVersion": "0.1.0",
           "buildNumber": "42"
         },
         "ipa": {
-          "fileName": "FireballWebKit.ipa",
+          "fileName": "XanhIOS.ipa",
           "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
           "sizeBytes": 23
         },
@@ -35,21 +35,21 @@
       "valid": false,
       "document": {
         "schemaVersion": 1,
-        "product": "fireball-webkit",
-        "repository": "LamPPKK/fireball-webkit",
+        "product": "xanh-ios",
+        "repository": "LamPPKK/xanh-ios",
         "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "workflow": {
           "runId": 32434697404,
           "attempt": 1,
-          "url": "https://github.com/LamPPKK/fireball-webkit/actions/runs/999/attempts/1"
+          "url": "https://github.com/LamPPKK/xanh-ios/actions/runs/999/attempts/1"
         },
         "app": {
-          "bundleIdentifier": "com.fireball.browser",
+          "bundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
           "marketingVersion": "0.1.0",
           "buildNumber": "42"
         },
         "ipa": {
-          "fileName": "FireballWebKit.ipa",
+          "fileName": "XanhIOS.ipa",
           "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
           "sizeBytes": 23
         },
@@ -64,21 +64,21 @@
       "valid": false,
       "document": {
         "schemaVersion": 1,
-        "product": "fireball-webkit",
-        "repository": "LamPPKK/fireball-webkit",
+        "product": "xanh-ios",
+        "repository": "LamPPKK/xanh-ios",
         "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "workflow": {
           "runId": 32434697404,
           "attempt": 1,
-          "url": "https://github.com/LamPPKK/fireball-webkit/actions/runs/32434697404/attempts/1"
+          "url": "https://github.com/LamPPKK/xanh-ios/actions/runs/32434697404/attempts/1"
         },
         "app": {
-          "bundleIdentifier": "com.fireball.browser",
+          "bundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
           "marketingVersion": "0.1.0",
           "buildNumber": "42"
         },
         "ipa": {
-          "fileName": "FireballWebKit.ipa",
+          "fileName": "XanhIOS.ipa",
           "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
           "sizeBytes": 23
         },
@@ -93,21 +93,21 @@
       "valid": false,
       "document": {
         "schemaVersion": 1,
-        "product": "fireball-webkit",
-        "repository": "LamPPKK/fireball-webkit",
+        "product": "xanh-ios",
+        "repository": "LamPPKK/xanh-ios",
         "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "workflow": {
           "runId": 32434697404,
           "attempt": 1,
-          "url": "https://github.com/LamPPKK/fireball-webkit/actions/runs/32434697404/attempts/1"
+          "url": "https://github.com/LamPPKK/xanh-ios/actions/runs/32434697404/attempts/1"
         },
         "app": {
-          "bundleIdentifier": "com.fireball.browser",
+          "bundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
           "marketingVersion": "0.1.0",
           "buildNumber": "42"
         },
         "ipa": {
-          "fileName": "FireballWebKit.ipa",
+          "fileName": "XanhIOS.ipa",
           "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
           "sizeBytes": 23
         },
@@ -122,21 +122,21 @@
       "valid": false,
       "document": {
         "schemaVersion": 1,
-        "product": "fireball-webkit",
-        "repository": "LamPPKK/fireball-webkit",
+        "product": "xanh-ios",
+        "repository": "LamPPKK/xanh-ios",
         "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "workflow": {
           "runId": 32434697404,
           "attempt": 1,
-          "url": "https://github.com/LamPPKK/fireball-webkit/actions/runs/32434697404/attempts/1"
+          "url": "https://github.com/LamPPKK/xanh-ios/actions/runs/32434697404/attempts/1"
         },
         "app": {
-          "bundleIdentifier": "com.fireball.browser",
+          "bundleIdentifier": "io.github.lamppkk.xanhbrowser.ios",
           "marketingVersion": "0.1.0",
           "buildNumber": "42"
         },
         "ipa": {
-          "fileName": "FireballWebKit.ipa",
+          "fileName": "XanhIOS.ipa",
           "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
           "sizeBytes": 23
         },

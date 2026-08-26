@@ -20,7 +20,7 @@ struct BrowserShellView: View {
 
     var body: some View {
         ZStack {
-            Color.fireballBackground.ignoresSafeArea()
+            Color.xanhBackground.ignoresSafeArea()
 
             if !store.isReady {
                 loadingView
@@ -49,7 +49,7 @@ struct BrowserShellView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView(store: store)
         }
-        .alert("Fireball", isPresented: errorBinding) {
+        .alert("Xanh", isPresented: errorBinding) {
             if store.canRecoverFailedPage {
                 Button("Reload") { store.retryFailedPage() }
                 Button("Open Home") { store.openHomeAfterWebContentFailure() }
@@ -87,20 +87,20 @@ struct BrowserShellView: View {
             statusRail
             ZStack(alignment: .top) {
                 if let session = store.activeSession {
-                    BrowserWebView(session: session)
+                    XanhWebView(session: session)
                         .id(session.tabID)
-                        .background(Color.fireballBackground)
+                        .background(Color.xanhBackground)
                     if session.isLoading {
                         GeometryReader { proxy in
                             Rectangle()
-                                .fill(Color.fireballGreen)
+                                .fill(Color.xanhGreen)
                                 .frame(width: max(2, proxy.size.width * session.estimatedProgress), height: 2)
                                 .animation(.easeOut(duration: 0.2), value: session.estimatedProgress)
                         }
                         .frame(height: 2)
                     }
                 } else {
-                    FireballHomeView(store: store)
+                    XanhHomeView(store: store)
                 }
             }
             bottomToolbar
@@ -109,20 +109,20 @@ struct BrowserShellView: View {
 
     private var statusRail: some View {
         HStack(spacing: 10) {
-            FireballBrandMark(size: 30)
-            Text("Fireball")
+            XanhBrandMark(size: 30)
+            Text("Xanh")
                 .font(.headline.weight(.black))
-                .foregroundStyle(Color.fireballCream)
+                .foregroundStyle(Color.xanhCream)
             if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                 contextBadge(
                     store.activeProfile?.name.uppercased() ?? "NO PROFILE",
                     systemImage: "person.crop.circle",
-                    accent: .fireballGreen
+                    accent: .xanhGreen
                 )
                 contextBadge(
                     store.selectedSpace?.name.uppercased() ?? "NO SPACE",
                     systemImage: store.selectedSpace?.storageMode == .ephemeral ? "eye.slash" : "square.stack.3d.up",
-                    accent: store.selectedSpace?.storageMode == .ephemeral ? .fireballOrange : .fireballMuted
+                    accent: store.selectedSpace?.storageMode == .ephemeral ? .xanhLeaf : .xanhMuted
                 )
             }
             Spacer()
@@ -135,15 +135,15 @@ struct BrowserShellView: View {
                 systemImage: "square.on.square"
             )
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
                 .lineLimit(2)
         }
         .font(.caption.weight(.bold))
         .padding(.horizontal, 14)
         .padding(.vertical, 9)
         .frame(minHeight: 48)
-        .background(Color.fireballPanel.opacity(0.98))
-        .overlay(alignment: .bottom) { Rectangle().fill(Color.fireballBorder).frame(height: 1) }
+        .background(Color.xanhPanel.opacity(0.98))
+        .overlay(alignment: .bottom) { Rectangle().fill(Color.xanhBorder).frame(height: 1) }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Browser status")
         .accessibilityValue(statusAccessibilityValue)
@@ -176,10 +176,10 @@ struct BrowserShellView: View {
                         if store.downloadCenter.activeCount > 0 {
                             Text("\(store.downloadCenter.activeCount)")
                                 .font(.caption2.monospacedDigit().weight(.black))
-                                .foregroundStyle(Color.fireballBackground)
+                                .foregroundStyle(Color.xanhBackground)
                                 .padding(.horizontal, 5)
                                 .frame(minWidth: 18, minHeight: 18)
-                                .background(Color.fireballGreen, in: Capsule())
+                                .background(Color.xanhGreen, in: Capsule())
                                 .offset(x: 8, y: -8)
                                 .accessibilityHidden(true)
                         }
@@ -192,17 +192,17 @@ struct BrowserShellView: View {
                 }
                 .accessibilityIdentifier("browser.settings")
             }
-            .buttonStyle(FireballCompactButtonStyle())
+            .buttonStyle(XanhCompactButtonStyle())
         }
         .padding(12)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.fireballBorder)
+                .stroke(Color.xanhBorder)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(Color.fireballBackground)
+        .background(Color.xanhBackground)
     }
 
     @ViewBuilder
@@ -251,7 +251,7 @@ struct BrowserShellView: View {
     private var addressField: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(focusedControl == .address ? Color.fireballGreen : Color.fireballMuted)
+                .foregroundStyle(focusedControl == .address ? Color.xanhGreen : Color.xanhMuted)
                 .accessibilityHidden(true)
             TextField("Address", text: $address)
                 .textInputAutocapitalization(.never)
@@ -271,10 +271,10 @@ struct BrowserShellView: View {
         }
         .padding(.horizontal, 14)
         .frame(minHeight: max(48, addressControlHeight))
-        .background(Color.fireballRaised, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .background(Color.xanhRaised, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .stroke(focusedControl == .address ? Color.fireballGreen : Color.fireballBorder, lineWidth: 1)
+                .stroke(focusedControl == .address ? Color.xanhGreen : Color.xanhBorder, lineWidth: 1)
         }
     }
 
@@ -325,7 +325,7 @@ struct BrowserShellView: View {
     }
 
     private var shieldsTint: Color {
-        store.shieldsEnabledForActiveSite ? .fireballGreen : .fireballOrange
+        store.shieldsEnabledForActiveSite ? .xanhGreen : .xanhLeaf
     }
 
     private var shieldsAccessibilityValue: String {
@@ -341,8 +341,8 @@ struct BrowserShellView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .foregroundStyle(Color.fireballBackground)
-        .background(Color.fireballGreen, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .foregroundStyle(Color.xanhBackground)
+        .background(Color.xanhGreen, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
         .accessibilityLabel("Go")
         .accessibilityHint("Open the address or search")
         .accessibilityIdentifier("browser.go")
@@ -350,12 +350,12 @@ struct BrowserShellView: View {
 
     private var loadingView: some View {
         VStack(spacing: 18) {
-            FireballBrandMark(size: 72)
-            ProgressView().tint(Color.fireballGreen).controlSize(.large)
+            XanhBrandMark(size: 72)
+            ProgressView().tint(Color.xanhGreen).controlSize(.large)
             Text("INITIALIZING PRIVATE STORES")
                 .font(.caption.monospaced().weight(.bold))
                 .tracking(1.4)
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
         }
     }
 
@@ -363,41 +363,41 @@ struct BrowserShellView: View {
         VStack(spacing: 20) {
             Image(systemName: "lock.shield")
                 .font(.system(size: 46, weight: .thin))
-                .foregroundStyle(Color.fireballGreen)
+                .foregroundStyle(Color.xanhGreen)
             Text("PROFILE LOCKED")
                 .font(.title2.monospaced().weight(.black))
             Text("Authenticate to reveal \(store.activeProfile?.name ?? "this profile").")
-                .foregroundStyle(Color.fireballMuted)
+                .foregroundStyle(Color.xanhMuted)
             Button("Unlock") { Task { await store.unlockActiveProfileIfNeeded() } }
                 .buttonStyle(.borderedProminent)
-                .tint(Color.fireballGreen)
-                .foregroundStyle(Color.fireballBackground)
+                .tint(Color.xanhGreen)
+                .foregroundStyle(Color.xanhBackground)
                 .controlSize(.large)
             Button("Recover with device authentication") {
                 Task { await store.recoverActiveProfileAccess() }
             }
             .buttonStyle(.bordered)
-            .tint(Color.fireballMuted)
+            .tint(Color.xanhMuted)
         }
         .padding(28)
-        .fireballPanel()
+        .xanhPanel()
         .padding(24)
     }
 
     private var privacyShield: some View {
         ZStack {
-            Color.fireballBackground.ignoresSafeArea()
-            FireballTrajectory()
+            Color.xanhBackground.ignoresSafeArea()
+            XanhSignalField()
             VStack(spacing: 12) {
-                FireballBrandMark(size: 104)
-                Text("Fireball")
+                XanhBrandMark(size: 104)
+                Text("Xanh")
                     .font(.title2.weight(.black))
                 Text("CONTENT HIDDEN")
                     .font(.caption.monospaced().weight(.bold))
-                    .foregroundStyle(Color.fireballMuted)
+                    .foregroundStyle(Color.xanhMuted)
             }
         }
-        .accessibilityLabel("Fireball content hidden while the app is inactive")
+        .accessibilityLabel("Xanh content hidden while the app is inactive")
     }
 
     private func toolButton(
@@ -424,8 +424,8 @@ struct BrowserShellView: View {
             .foregroundStyle(accent)
             .padding(.horizontal, 10)
             .frame(minHeight: 28)
-            .background(Color.fireballRaised, in: Capsule())
-            .overlay { Capsule().stroke(Color.fireballBorder) }
+            .background(Color.xanhRaised, in: Capsule())
+            .overlay { Capsule().stroke(Color.xanhBorder) }
     }
 
     private func navigate() {
@@ -486,10 +486,10 @@ struct BrowserShellView: View {
 
     private var syncColor: Color {
         switch store.syncStatus {
-        case .available: .fireballGreen
+        case .available: .xanhGreen
         case .starting, .syncing: .yellow
-        case .localOnly: .fireballMuted
-        case .degraded: .fireballOrange
+        case .localOnly: .xanhMuted
+        case .degraded: .xanhLeaf
         }
     }
 
@@ -513,15 +513,15 @@ struct BrowserShellView: View {
     }
 }
 
-private struct FireballCompactButtonStyle: ButtonStyle {
+private struct XanhCompactButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .labelStyle(.iconOnly)
             .frame(minWidth: 48, minHeight: 48)
             .contentShape(Rectangle())
-            .foregroundStyle(configuration.isPressed ? Color.fireballGreen : Color.fireballCream)
+            .foregroundStyle(configuration.isPressed ? Color.xanhGreen : Color.xanhCream)
             .background(
-                configuration.isPressed ? Color.fireballRaised : Color.clear,
+                configuration.isPressed ? Color.xanhRaised : Color.clear,
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)

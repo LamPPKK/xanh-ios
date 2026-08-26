@@ -77,7 +77,7 @@ def translate(line: str):
 
 
 def fetch(url: str) -> str:
-    request = urllib.request.Request(url, headers={"User-Agent": "FireballBlockerBuilder/1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "XanhBlockerBuilder/1"})
     with urllib.request.urlopen(request, timeout=60) as response:
         return response.read().decode("utf-8")
 

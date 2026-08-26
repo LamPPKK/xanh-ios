@@ -47,22 +47,22 @@ jobs:
           derived="$(openssl pkey -in "$RUNNER_TEMP/blocker-signing-key.pem" -pubout -outform DER | tail -c 32 | base64 | tr -d '\n')"
           test "$derived" = "$BLOCKER_PUBLIC_KEY_BASE64"
       - name: Select supported iPhone simulator
-        run: printf 'FIREBALL_IPHONE_UDID=%s\n' "$(python3 Tools/select_simulator.py --family iphone)" >> "$GITHUB_ENV"
+        run: printf 'XANH_IPHONE_UDID=%s\n' "$(python3 Tools/select_simulator.py --family iphone)" >> "$GITHUB_ENV"
       - name: Compile every shard with WebKit
         run: |
           xcodegen generate
           xcodebuild test \
-            -project FireballWebKit.xcodeproj \
-            -scheme FireballWebKit \
-            -destination "platform=iOS Simulator,id=$FIREBALL_IPHONE_UDID" \
-            -only-testing:FireballWebKitTests/BlockerArtifactCompilationTests \
+            -project XanhIOS.xcodeproj \
+            -scheme XanhIOS \
+            -destination "platform=iOS Simulator,id=$XANH_IPHONE_UDID" \
+            -only-testing:XanhIOSTests/BlockerArtifactCompilationTests \
             CODE_SIGNING_ALLOWED=NO \
-            FIREBALL_RULE_ARTIFACT_DIRECTORY="$PWD/build/blocker"
+            XANH_RULE_ARTIFACT_DIRECTORY="$PWD/build/blocker"
       - name: Sign manifest
         run: |
           python3 Tools/create_blocker_manifest.py \
             --index build/blocker/artifact-index.json \
-            --base-url "https://lamppkk.github.io/fireball-webkit/blocker/${{ inputs.version }}" \
+            --base-url "https://lamppkk.github.io/xanh-ios/blocker/${{ inputs.version }}" \
             --version "${{ inputs.version }}" \
             --private-key "$RUNNER_TEMP/blocker-signing-key.pem" \
             --output build/blocker/manifest-v1.json
@@ -71,14 +71,14 @@ jobs:
           BLOCKER_PUBLIC_KEY_BASE64: ${{ secrets.BLOCKER_PUBLIC_KEY_BASE64 }}
         run: |
           xcodebuild test \
-            -project FireballWebKit.xcodeproj \
-            -scheme FireballWebKit \
-            -destination "platform=iOS Simulator,id=$FIREBALL_IPHONE_UDID" \
-            -only-testing:FireballWebKitTests/BlockerExternalManifestTests \
+            -project XanhIOS.xcodeproj \
+            -scheme XanhIOS \
+            -destination "platform=iOS Simulator,id=$XANH_IPHONE_UDID" \
+            -only-testing:XanhIOSTests/BlockerExternalManifestTests \
             CODE_SIGNING_ALLOWED=NO \
-            FIREBALL_BLOCKER_MANIFEST="$PWD/build/blocker/manifest-v1.json" \
-            FIREBALL_BLOCKER_ARTIFACT_DIRECTORY="$PWD/build/blocker" \
-            FIREBALL_BLOCKER_PUBLIC_KEY_BASE64="$BLOCKER_PUBLIC_KEY_BASE64"
+            XANH_BLOCKER_MANIFEST="$PWD/build/blocker/manifest-v1.json" \
+            XANH_BLOCKER_ARTIFACT_DIRECTORY="$PWD/build/blocker" \
+            XANH_BLOCKER_PUBLIC_KEY_BASE64="$BLOCKER_PUBLIC_KEY_BASE64"
       - name: Publish immutable source and derived artifacts
         env:
           GH_TOKEN: ${{ github.token }}
@@ -89,7 +89,7 @@ jobs:
             build/blocker/conversion-report.json \
             build/blocker/artifact-index.json \
             Blocker/sources.json \
-            --title "Fireball blocker ${{ inputs.version }}" \
+            --title "Xanh blocker ${{ inputs.version }}" \
             --notes "Derived from the pinned EasyList and EasyPrivacy commit in sources.json. GPL-3.0-or-later attribution: https://easylist.to/pages/licence.html"
       - name: Deploy stable blocker URLs and policy pages
         run: |

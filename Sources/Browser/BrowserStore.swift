@@ -65,7 +65,7 @@ final class BrowserStore {
         repository: any BrowserRepository,
         dataStores: any WebsiteDataStoreManaging = WebsiteDataStoreRegistry(),
         ruleCompiler: any ContentRuleCompiling = ContentRuleService(),
-        profileLocks: any ProfileLocking = KeychainProfileLockStore(service: "com.fireball.browser.profile-lock"),
+        profileLocks: any ProfileLocking = KeychainProfileLockStore(service: "io.github.lamppkk.xanhbrowser.ios.profile-lock"),
         ownerAuthenticator: any OwnerAuthenticating = LocalOwnerAuthenticator(),
         loadBundledRules: Bool = true,
         blockerUpdater: BlockerUpdateService? = nil,
@@ -577,6 +577,110 @@ final class BrowserStore {
         tryPersist()
     }
 
+    func makePortableBackupData(exportedAt: Date = .now) throws -> Data {
+        try XanhPortableBackup.encode(persistedSnapshot(), exportedAt: exportedAt)
+    }
+
+    func importPortableBackupData(_ data: Data, now: Date = .now) throws {
+        let imported = XanhPortableBackup.rebasedForImport(
+            try XanhPortableBackup.decode(data),
+            at: now
+        )
+        let previousState = profileDeletionStateSnapshot()
+        let previousPersistentTabIDs = Set(
+            tabs.lazy.filter { $0.storageMode == .persistent }.map(\.id)
+        )
+        let privateProfiles = profiles.filter { $0.storageMode == .ephemeral }
+        let privateSpaces = spaces.filter { $0.storageMode == .ephemeral }
+        let privateTabs = tabs.filter { $0.storageMode == .ephemeral }
+        let privateProfileIDs = Set(privateProfiles.map(\.id))
+        let privateSiteExceptions = blockerSiteExceptions.filter {
+            privateProfileIDs.contains($0.profileID)
+        }
+        try rejectPrivateRuntimeCollisions(
+            imported: imported,
+            privateProfiles: privateProfiles,
+            privateSpaces: privateSpaces,
+            privateTabs: privateTabs,
+            privateSiteExceptions: privateSiteExceptions
+        )
+        let selectedPrivateSpaceID = selectedSpaceID.flatMap { selected in
+            privateSpaces.contains(where: { $0.id == selected }) ? selected : nil
+        }
+        let importedProfileIDs = Set(imported.profiles.map(\.id))
+
+        profiles = imported.profiles + privateProfiles
+        spaces = sorted(imported.spaces + privateSpaces)
+        tabs = sorted(imported.tabs) + privateTabs
+        archivedTabs = sorted(imported.archivedTabs)
+        blockerSiteExceptions = sanitizedBlockerSiteExceptions(
+            imported.blockerSiteExceptions + privateSiteExceptions
+        )
+        bookmarks = imported.bookmarks.sorted { $0.createdAt > $1.createdAt }
+        history = imported.history.sorted { $0.visitedAt > $1.visitedAt }
+        profileDeletionCleanups = profileDeletionCleanups.filter {
+            !importedProfileIDs.contains($0.profileID)
+        }
+        settings = imported.settings
+        unlockedProfiles = Set(unlockedProfiles.filter(privateProfileIDs.contains))
+        purgeExpiredHistory(now: now)
+        purgeExpiredArchive(now: now)
+
+        selectedSpaceID = selectedPrivateSpaceID
+            ?? settings.lastSelectedSpaceID
+            ?? sorted(imported.spaces).first?.id
+        if let selectedSpace = spaces.first(where: { $0.id == selectedSpaceID }) {
+            selectedTabID = selectedSpace.selectedTabID
+                ?? sorted(tabs.filter { $0.spaceID == selectedSpace.id }).last?.id
+        } else {
+            selectedTabID = nil
+        }
+
+        do {
+            try repository.savePortableImport(persistedSnapshot(), importedAt: now)
+        } catch {
+            restoreProfileDeletionState(previousState)
+            throw error
+        }
+
+        for tabID in previousPersistentTabIDs {
+            sessions.removeValue(forKey: tabID)?.webView.stopLoading()
+            thumbnails.removeValue(forKey: tabID)
+        }
+        if let failureTabID = webContentFailureTabID,
+           previousPersistentTabIDs.contains(failureTabID) {
+            clearWebContentFailure(for: failureTabID)
+        }
+        for profile in imported.profiles {
+            stagePolicyChange(for: profile.id)
+        }
+    }
+
+    private func rejectPrivateRuntimeCollisions(
+        imported: BrowserSnapshot,
+        privateProfiles: [BrowserProfile],
+        privateSpaces: [BrowserSpace],
+        privateTabs: [BrowserTab],
+        privateSiteExceptions: [BlockerSiteException]
+    ) throws {
+        guard Set(imported.profiles.map(\.id)).isDisjoint(with: Set(privateProfiles.map(\.id))) else {
+            throw XanhPortableBackupError.invalidReference("profile ID collides with private runtime state")
+        }
+        guard Set(imported.spaces.map(\.id)).isDisjoint(with: Set(privateSpaces.map(\.id))) else {
+            throw XanhPortableBackupError.invalidReference("space ID collides with private runtime state")
+        }
+        guard Set(imported.tabs.map(\.id)).isDisjoint(with: Set(privateTabs.map(\.id))) else {
+            throw XanhPortableBackupError.invalidReference("tab ID collides with private runtime state")
+        }
+        guard Set(imported.blockerSiteExceptions.map(\.id)).isDisjoint(
+            with: Set(privateSiteExceptions.map(\.id))
+        ) else {
+            throw XanhPortableBackupError.invalidReference(
+                "site-exception ID collides with private runtime state"
+            )
+        }
+    }
+
     @discardableResult
     func restoreArchivedTab(_ archivedTabID: ArchivedTabID) -> BrowserTab? {
         guard let archived = archivedTabs.first(where: { $0.id == archivedTabID }),
@@ -700,7 +804,7 @@ final class BrowserStore {
                 try profileLocks.enable(for: profileID)
                 unlockedProfiles.remove(profileID)
             } else {
-                try await ownerAuthenticator.authenticate(reason: "Disable protection for this Fireball profile")
+                try await ownerAuthenticator.authenticate(reason: "Disable protection for this Xanh profile")
                 try profileLocks.disable(for: profileID)
                 unlockedProfiles.insert(profileID)
             }
@@ -717,7 +821,7 @@ final class BrowserStore {
         guard let profile = activeProfile else { return }
         if profile.storageMode == .ephemeral, privateSpaceLocked {
             do {
-                try await ownerAuthenticator.authenticate(reason: "Unlock the private Fireball space")
+                try await ownerAuthenticator.authenticate(reason: "Unlock the private Xanh space")
                 privateSpaceLocked = false
             } catch {
                 errorMessage = "The private space remains locked."
@@ -727,7 +831,7 @@ final class BrowserStore {
         guard profileLocks.isEnabled(for: profile.id),
               !unlockedProfiles.contains(profile.id) else { return }
         do {
-            try await profileLocks.unlock(profileID: profile.id, reason: "Unlock \(profile.name) in Fireball")
+            try await profileLocks.unlock(profileID: profile.id, reason: "Unlock \(profile.name) in Xanh")
             unlockedProfiles.insert(profile.id)
         } catch {
             errorMessage = "Profile remains locked."
@@ -737,7 +841,7 @@ final class BrowserStore {
     func recoverActiveProfileAccess() async {
         guard let profile = activeProfile, profileLocks.isEnabled(for: profile.id) else { return }
         do {
-            try await ownerAuthenticator.authenticate(reason: "Recover access to \(profile.name) in Fireball")
+            try await ownerAuthenticator.authenticate(reason: "Recover access to \(profile.name) in Xanh")
             do {
                 try profileLocks.enable(for: profile.id)
             } catch {
@@ -837,7 +941,7 @@ final class BrowserStore {
         guard loadBundledRules else { return }
         if let resource = Bundle.main.url(forResource: "content-rules", withExtension: "json") {
             let encoded = try String(contentsOf: resource, encoding: .utf8)
-            contentRules = [try await ruleCompiler.compile(identifier: "fireball-bundled-v1", encodedRules: encoded)]
+            contentRules = [try await ruleCompiler.compile(identifier: "xanh-bundled-v1", encodedRules: encoded)]
         }
         if let installed = try await blockerUpdater?.installedRules(), !installed.isEmpty {
             contentRules = installed
@@ -848,11 +952,7 @@ final class BrowserStore {
     private func mergeExternalChanges() async {
         do {
             let snapshot = try await repository.load()
-            let previousPersistentProfileIDs = Set(
-                profiles.filter { $0.storageMode == .persistent }.map(\.id)
-            )
             let incomingPersistentProfileIDs = Set(snapshot.profiles.map(\.id))
-            let remotelyDeletedProfileIDs = previousPersistentProfileIDs.subtracting(incomingPersistentProfileIDs)
             let privateProfiles = profiles.filter { $0.storageMode == .ephemeral }
             let privateSpaces = spaces.filter { $0.storageMode == .ephemeral }
             let privateTabs = tabs.filter { $0.storageMode == .ephemeral }
@@ -876,7 +976,6 @@ final class BrowserStore {
             history = snapshot.history
             let mergedCleanups = mergedProfileDeletionCleanups(
                 snapshot.profileDeletionCleanups,
-                adding: remotelyDeletedProfileIDs,
                 excluding: incomingPersistentProfileIDs
             )
             let cleanupLedgerChanged = Set(mergedCleanups) != Set(snapshot.profileDeletionCleanups)
@@ -899,7 +998,6 @@ final class BrowserStore {
 
     private func mergedProfileDeletionCleanups(
         _ incoming: [ProfileDeletionCleanup],
-        adding profileIDs: Set<ProfileID>,
         excluding activeProfileIDs: Set<ProfileID>
     ) -> [ProfileDeletionCleanup] {
         var byProfile: [ProfileID: ProfileDeletionCleanup] = [:]
@@ -915,9 +1013,6 @@ final class BrowserStore {
             } else {
                 byProfile[candidate.profileID] = candidate
             }
-        }
-        for profileID in profileIDs where byProfile[profileID] == nil {
-            byProfile[profileID] = ProfileDeletionCleanup(profileID: profileID)
         }
         return byProfile.values
             .filter { !activeProfileIDs.contains($0.profileID) }

@@ -25,7 +25,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.export = self.root / "export"
         self.export.mkdir()
-        self.ipa = self.export / "FireballWebKit.ipa"
+        self.ipa = self.export / "XanhIOS.ipa"
         self.ipa.write_bytes(b"signed release artifact")
         self.now = datetime(2026, 8, 21, 1, 2, 3, tzinfo=timezone.utc)
 
@@ -36,7 +36,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
         expected_sha256, expected_size = hash_ipa(self.ipa)
         return create_candidate(
             self.ipa,
-            "LamPPKK/fireball-webkit",
+            "LamPPKK/xanh-ios",
             "a" * 40,
             "32434697404",
             "1",
@@ -78,9 +78,9 @@ class ReleaseEvidenceTests(unittest.TestCase):
         self.assertEqual(evidence["commitSha"], "a" * 40)
         self.assertEqual(
             evidence["workflow"]["url"],
-            "https://github.com/LamPPKK/fireball-webkit/actions/runs/32434697404/attempts/1",
+            "https://github.com/LamPPKK/xanh-ios/actions/runs/32434697404/attempts/1",
         )
-        self.assertEqual(evidence["ipa"]["fileName"], "FireballWebKit.ipa")
+        self.assertEqual(evidence["ipa"]["fileName"], "XanhIOS.ipa")
         self.assertEqual(
             evidence["ipa"]["sha256"],
             hashlib.sha256(b"signed release artifact").hexdigest(),
@@ -98,7 +98,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "commit"):
             create_candidate(
                 self.ipa,
-                "LamPPKK/fireball-webkit",
+                "LamPPKK/xanh-ios",
                 "A" * 40,
                 "1",
                 "1",
@@ -109,7 +109,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "canonical positive"):
             create_candidate(
                 self.ipa,
-                "LamPPKK/fireball-webkit",
+                "LamPPKK/xanh-ios",
                 "a" * 40,
                 "01",
                 "1",
@@ -123,7 +123,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "non-symlink"):
             create_candidate(
                 link,
-                "LamPPKK/fireball-webkit",
+                "LamPPKK/xanh-ios",
                 "a" * 40,
                 "1",
                 "1",
@@ -139,7 +139,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "locked pre-upload identity"):
             create_candidate(
                 self.ipa,
-                "LamPPKK/fireball-webkit",
+                "LamPPKK/xanh-ios",
                 "a" * 40,
                 "1",
                 "1",

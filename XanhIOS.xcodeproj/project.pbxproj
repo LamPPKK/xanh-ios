@@ -1,0 +1,721 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00C41750496218BF282CFEFB /* XanhBackupDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E07316B0295321A23B109A /* XanhBackupDocument.swift */; };
+		0B3D3C7BD6328357ECAD8DD2 /* URLPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3AAD4C98D42C24B1B94BC2 /* URLPolicy.swift */; };
+		0C417377828567E0A6971977 /* XanhTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF360B5B18104A0B1833094 /* XanhTheme.swift */; };
+		15A943DD1A71F41BDB945F9A /* XanhHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFFEB047147E1CB47190906 /* XanhHomeView.swift */; };
+		1753E0253554D296985FFA24 /* URLPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6F527B4DEBF1774B67219A /* URLPolicyTests.swift */; };
+		1B76F37F7492362E5589E835 /* content-rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 8047D882BD5D4C648986BC5D /* content-rules.json */; };
+		37AB23EEC6F50B9D8954EC9A /* WebsiteDataStoreRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D616113F7B1A0F9A64E2BCC /* WebsiteDataStoreRegistry.swift */; };
+		392007DC226B05D944644E6D /* WebContentProcessRecoveryPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770A7C53710546345202B2B2 /* WebContentProcessRecoveryPolicyTests.swift */; };
+		3A38F55BD686D92D7D7EC92F /* TabGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F9AD8AAAE61D07687D104 /* TabGridView.swift */; };
+		3B74BDB8B2D2760A6998C989 /* SessionRestoration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E3103E9D623245EEF9A3749 /* SessionRestoration.swift */; };
+		4310DC974FC0EB6552E793D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77077C3DBFDBBCCD3E2A7B3 /* Assets.xcassets */; };
+		4444C33656BF8E9A2803EA21 /* BlockerArtifactCompilationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78AC9BA474162493A71E7674 /* BlockerArtifactCompilationTests.swift */; };
+		531BAC6770B624938C689252 /* SessionRestorationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DFD15100B42568E4422086 /* SessionRestorationTests.swift */; };
+		56F9F176965680160D0DCE28 /* BrowserCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51491032C554222C9ED15EC3 /* BrowserCommands.swift */; };
+		5FF9561A699CE4156257F09C /* BrowserStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D243A491851F6B5F1D305540 /* BrowserStore.swift */; };
+		60496E025958E79CB1A1430E /* BrowserSmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507916CA9FE466832A30A98F /* BrowserSmokeUITests.swift */; };
+		631D0C084A7CF3E6237353E6 /* BrowserModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50089DF6C44504C4D2FF8739 /* BrowserModels.swift */; };
+		65F1AFF8EDF7C9867F6145F9 /* SecureAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41E1EA33B5CDC38A030A70F /* SecureAccess.swift */; };
+		6631D31170150FC99F450BB5 /* SecureAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0323B3DD906D512BEAD526 /* SecureAccessTests.swift */; };
+		6A5465606A17F09F598B7B4D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7170084D367D9F3030C2F9D6 /* SettingsView.swift */; };
+		75FE9656D5E08D7B2CCD7C11 /* blocker-public-key.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4CFD67863366F4097E691DB1 /* blocker-public-key.txt */; };
+		7E8D5AC24FF8B13F95CD7C65 /* BrowserDownloadCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1CE0B2A8CB9FBD9FBBDF31 /* BrowserDownloadCenterTests.swift */; };
+		84939C8368B742C3ECCDB648 /* CoreDataBrowserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563D12BCED79A85F19FB2ED4 /* CoreDataBrowserRepository.swift */; };
+		87514282DB76CE74B5DBED29 /* XanhWebViewContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C59C8AC40579D52EDDEDBA /* XanhWebViewContractTests.swift */; };
+		8A95EF9DB3237311FABCFB07 /* BrowserPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952A593845BC5B858B1C4857 /* BrowserPersistenceTests.swift */; };
+		8F55C52E3C9E2887D0A1786D /* ContentRuleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E21EAD8BA1466E2FD52019 /* ContentRuleService.swift */; };
+		95F09C4249660304E1FA41F4 /* BrowserShellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E5E797B886E0BFC49A00DC /* BrowserShellView.swift */; };
+		9CA95808C85623F13C326C82 /* XanhPortableBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798E9BE986EBA1C59D715B97 /* XanhPortableBackupTests.swift */; };
+		B205B96C42FC18E46E29E82C /* XanhWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46186A522959550351E13726 /* XanhWebView.swift */; };
+		B344D860084A9DBCF1C6C88C /* BrowserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E688AA349FD033CAC6B4453 /* BrowserSession.swift */; };
+		BE28E0959336FB475A726367 /* DownloadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D26885AABD798D55B340FB /* DownloadsView.swift */; };
+		BEF97837318B9FD3B49C6204 /* BrowserStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ECFF43787F1DCA045F4D7AD /* BrowserStoreTests.swift */; };
+		C30E7B7559F6ADAFB599064D /* BrowserModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5EB1DA37368D67E2B012D6 /* BrowserModelsTests.swift */; };
+		CBE44C2E7A7FE407BCE1A6BA /* BlockerManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93961F9D226DFD61DCD10A2 /* BlockerManifestTests.swift */; };
+		D9D83CE332D100D60CB7EC5D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BFC66457C6E89E880FCDF32A /* PrivacyInfo.xcprivacy */; };
+		E24CB94299F3B28191A5A285 /* WebContentProcessRecoveryPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C247CA5DD64F03A4DCC76A6 /* WebContentProcessRecoveryPolicy.swift */; };
+		E2B8E0AF8275EFA7D43CA8AE /* BrowserDownloadCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84F7B4932601CC9E87D78D1 /* BrowserDownloadCenter.swift */; };
+		E9348AA87A82A7CF126925F9 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD6CFC111C989F0F3AC9EF2 /* LibraryView.swift */; };
+		EFDC5B830590429ACDAFA773 /* XanhIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE85A06D0A661E51E3935B4 /* XanhIOSApp.swift */; };
+		F49AAC3270EA7AC04DE8AF6E /* XanhPortableBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6602D3E1A945406DBEAAD89A /* XanhPortableBackup.swift */; };
+		F7169A48AEDBF04C1DB73314 /* BlockerExternalManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F4B53DB7F02297B1B6340D /* BlockerExternalManifestTests.swift */; };
+		F781738FF64FEE4FF901486F /* BrowserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2B0EF31F4F198B0B20F4DA /* BrowserRepository.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CB38A42A67775C181E3ECB7D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E80358DCA7BA3F77B0A4904A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3CF8F72BE8BAB2E931C9962;
+			remoteInfo = XanhIOS;
+		};
+		DB534E21EBDD3E1A67DDCF02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E80358DCA7BA3F77B0A4904A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D3CF8F72BE8BAB2E931C9962;
+			remoteInfo = XanhIOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01E5E797B886E0BFC49A00DC /* BrowserShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserShellView.swift; sourceTree = "<group>"; };
+		0B0F9AD8AAAE61D07687D104 /* TabGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabGridView.swift; sourceTree = "<group>"; };
+		0C3AAD4C98D42C24B1B94BC2 /* URLPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLPolicy.swift; sourceTree = "<group>"; };
+		0E688AA349FD033CAC6B4453 /* BrowserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserSession.swift; sourceTree = "<group>"; };
+		0F5EB1DA37368D67E2B012D6 /* BrowserModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserModelsTests.swift; sourceTree = "<group>"; };
+		10E21EAD8BA1466E2FD52019 /* ContentRuleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentRuleService.swift; sourceTree = "<group>"; };
+		15C59C8AC40579D52EDDEDBA /* XanhWebViewContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhWebViewContractTests.swift; sourceTree = "<group>"; };
+		19D26885AABD798D55B340FB /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
+		2F183DE80956F13E9A2BC394 /* XanhIOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = XanhIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		43F4B53DB7F02297B1B6340D /* BlockerExternalManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockerExternalManifestTests.swift; sourceTree = "<group>"; };
+		46186A522959550351E13726 /* XanhWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhWebView.swift; sourceTree = "<group>"; };
+		4CFD67863366F4097E691DB1 /* blocker-public-key.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "blocker-public-key.txt"; sourceTree = "<group>"; };
+		50089DF6C44504C4D2FF8739 /* BrowserModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserModels.swift; sourceTree = "<group>"; };
+		507916CA9FE466832A30A98F /* BrowserSmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserSmokeUITests.swift; sourceTree = "<group>"; };
+		51491032C554222C9ED15EC3 /* BrowserCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserCommands.swift; sourceTree = "<group>"; };
+		563D12BCED79A85F19FB2ED4 /* CoreDataBrowserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataBrowserRepository.swift; sourceTree = "<group>"; };
+		5DE85A06D0A661E51E3935B4 /* XanhIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhIOSApp.swift; sourceTree = "<group>"; };
+		5ECFF43787F1DCA045F4D7AD /* BrowserStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserStoreTests.swift; sourceTree = "<group>"; };
+		5EFFEB047147E1CB47190906 /* XanhHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhHomeView.swift; sourceTree = "<group>"; };
+		6602D3E1A945406DBEAAD89A /* XanhPortableBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhPortableBackup.swift; sourceTree = "<group>"; };
+		7170084D367D9F3030C2F9D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		76E07316B0295321A23B109A /* XanhBackupDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhBackupDocument.swift; sourceTree = "<group>"; };
+		770A7C53710546345202B2B2 /* WebContentProcessRecoveryPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebContentProcessRecoveryPolicyTests.swift; sourceTree = "<group>"; };
+		78AC9BA474162493A71E7674 /* BlockerArtifactCompilationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockerArtifactCompilationTests.swift; sourceTree = "<group>"; };
+		798E9BE986EBA1C59D715B97 /* XanhPortableBackupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhPortableBackupTests.swift; sourceTree = "<group>"; };
+		7C247CA5DD64F03A4DCC76A6 /* WebContentProcessRecoveryPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebContentProcessRecoveryPolicy.swift; sourceTree = "<group>"; };
+		7E3103E9D623245EEF9A3749 /* SessionRestoration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestoration.swift; sourceTree = "<group>"; };
+		8047D882BD5D4C648986BC5D /* content-rules.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "content-rules.json"; sourceTree = "<group>"; };
+		952A593845BC5B858B1C4857 /* BrowserPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserPersistenceTests.swift; sourceTree = "<group>"; };
+		9D1CE0B2A8CB9FBD9FBBDF31 /* BrowserDownloadCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserDownloadCenterTests.swift; sourceTree = "<group>"; };
+		9D616113F7B1A0F9A64E2BCC /* WebsiteDataStoreRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsiteDataStoreRegistry.swift; sourceTree = "<group>"; };
+		9F0323B3DD906D512BEAD526 /* SecureAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureAccessTests.swift; sourceTree = "<group>"; };
+		A84F7B4932601CC9E87D78D1 /* BrowserDownloadCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserDownloadCenter.swift; sourceTree = "<group>"; };
+		ABD6CFC111C989F0F3AC9EF2 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		B1DFD15100B42568E4422086 /* SessionRestorationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationTests.swift; sourceTree = "<group>"; };
+		B41E1EA33B5CDC38A030A70F /* SecureAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureAccess.swift; sourceTree = "<group>"; };
+		BC6F527B4DEBF1774B67219A /* URLPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLPolicyTests.swift; sourceTree = "<group>"; };
+		BFC66457C6E89E880FCDF32A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		CEF360B5B18104A0B1833094 /* XanhTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XanhTheme.swift; sourceTree = "<group>"; };
+		CF255F25E11005D19FEACC22 /* XanhIOSTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = XanhIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1515C611F59B527ED056601 /* XanhIOSUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = XanhIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D243A491851F6B5F1D305540 /* BrowserStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserStore.swift; sourceTree = "<group>"; };
+		D77077C3DBFDBBCCD3E2A7B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E93961F9D226DFD61DCD10A2 /* BlockerManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockerManifestTests.swift; sourceTree = "<group>"; };
+		EE2B0EF31F4F198B0B20F4DA /* BrowserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserRepository.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		051584391EC6879C7BA44671 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				EB31CB8283B9B3272110138C /* Browser */,
+				8F0B84F7B51D62F9102CF6A7 /* Domain */,
+				90EF80B7AA23FD5728A8DC73 /* Persistence */,
+				488AB5DD06F3A4F8F06C21AB /* Security */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		203E6802DA03123B39E46CA8 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				78AC9BA474162493A71E7674 /* BlockerArtifactCompilationTests.swift */,
+				43F4B53DB7F02297B1B6340D /* BlockerExternalManifestTests.swift */,
+				E93961F9D226DFD61DCD10A2 /* BlockerManifestTests.swift */,
+				9D1CE0B2A8CB9FBD9FBBDF31 /* BrowserDownloadCenterTests.swift */,
+				0F5EB1DA37368D67E2B012D6 /* BrowserModelsTests.swift */,
+				952A593845BC5B858B1C4857 /* BrowserPersistenceTests.swift */,
+				5ECFF43787F1DCA045F4D7AD /* BrowserStoreTests.swift */,
+				9F0323B3DD906D512BEAD526 /* SecureAccessTests.swift */,
+				B1DFD15100B42568E4422086 /* SessionRestorationTests.swift */,
+				BC6F527B4DEBF1774B67219A /* URLPolicyTests.swift */,
+				770A7C53710546345202B2B2 /* WebContentProcessRecoveryPolicyTests.swift */,
+				798E9BE986EBA1C59D715B97 /* XanhPortableBackupTests.swift */,
+				15C59C8AC40579D52EDDEDBA /* XanhWebViewContractTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		3CD1DCE592EB72DA1FB67E19 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				507916CA9FE466832A30A98F /* BrowserSmokeUITests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		488AB5DD06F3A4F8F06C21AB /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				B41E1EA33B5CDC38A030A70F /* SecureAccess.swift */,
+			);
+			path = Security;
+			sourceTree = "<group>";
+		};
+		66AA65DCB9665217274EE28D /* App */ = {
+			isa = PBXGroup;
+			children = (
+				51491032C554222C9ED15EC3 /* BrowserCommands.swift */,
+				01E5E797B886E0BFC49A00DC /* BrowserShellView.swift */,
+				19D26885AABD798D55B340FB /* DownloadsView.swift */,
+				ABD6CFC111C989F0F3AC9EF2 /* LibraryView.swift */,
+				7170084D367D9F3030C2F9D6 /* SettingsView.swift */,
+				0B0F9AD8AAAE61D07687D104 /* TabGridView.swift */,
+				76E07316B0295321A23B109A /* XanhBackupDocument.swift */,
+				5EFFEB047147E1CB47190906 /* XanhHomeView.swift */,
+				5DE85A06D0A661E51E3935B4 /* XanhIOSApp.swift */,
+				CEF360B5B18104A0B1833094 /* XanhTheme.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		8763EB361BAA89EDE623BF45 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D77077C3DBFDBBCCD3E2A7B3 /* Assets.xcassets */,
+				4CFD67863366F4097E691DB1 /* blocker-public-key.txt */,
+				8047D882BD5D4C648986BC5D /* content-rules.json */,
+				BFC66457C6E89E880FCDF32A /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8F0B84F7B51D62F9102CF6A7 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				50089DF6C44504C4D2FF8739 /* BrowserModels.swift */,
+				7E3103E9D623245EEF9A3749 /* SessionRestoration.swift */,
+				0C3AAD4C98D42C24B1B94BC2 /* URLPolicy.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		90EF80B7AA23FD5728A8DC73 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				EE2B0EF31F4F198B0B20F4DA /* BrowserRepository.swift */,
+				563D12BCED79A85F19FB2ED4 /* CoreDataBrowserRepository.swift */,
+				6602D3E1A945406DBEAAD89A /* XanhPortableBackup.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		DB0FDB4E66E77D49018D3CBD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F183DE80956F13E9A2BC394 /* XanhIOS.app */,
+				CF255F25E11005D19FEACC22 /* XanhIOSTests.xctest */,
+				D1515C611F59B527ED056601 /* XanhIOSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EB31CB8283B9B3272110138C /* Browser */ = {
+			isa = PBXGroup;
+			children = (
+				A84F7B4932601CC9E87D78D1 /* BrowserDownloadCenter.swift */,
+				0E688AA349FD033CAC6B4453 /* BrowserSession.swift */,
+				D243A491851F6B5F1D305540 /* BrowserStore.swift */,
+				10E21EAD8BA1466E2FD52019 /* ContentRuleService.swift */,
+				7C247CA5DD64F03A4DCC76A6 /* WebContentProcessRecoveryPolicy.swift */,
+				9D616113F7B1A0F9A64E2BCC /* WebsiteDataStoreRegistry.swift */,
+				46186A522959550351E13726 /* XanhWebView.swift */,
+			);
+			path = Browser;
+			sourceTree = "<group>";
+		};
+		FFDD06C6473C1B9440DC4F92 = {
+			isa = PBXGroup;
+			children = (
+				66AA65DCB9665217274EE28D /* App */,
+				8763EB361BAA89EDE623BF45 /* Resources */,
+				051584391EC6879C7BA44671 /* Sources */,
+				203E6802DA03123B39E46CA8 /* Tests */,
+				3CD1DCE592EB72DA1FB67E19 /* UITests */,
+				DB0FDB4E66E77D49018D3CBD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D3CF8F72BE8BAB2E931C9962 /* XanhIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D7B5077F615855E075B0D4D5 /* Build configuration list for PBXNativeTarget "XanhIOS" */;
+			buildPhases = (
+				9F5C0BFA786BF50F44EC9FDA /* Sources */,
+				C419E2971584EBED27B859D0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XanhIOS;
+			packageProductDependencies = (
+			);
+			productName = XanhIOS;
+			productReference = 2F183DE80956F13E9A2BC394 /* XanhIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D6F8F41FE570F81FAD060E59 /* XanhIOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ECCA87FF7C69158A5A62108A /* Build configuration list for PBXNativeTarget "XanhIOSUITests" */;
+			buildPhases = (
+				6FF48AAC280D983F3E390080 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2857E75E09F476826F514C03 /* PBXTargetDependency */,
+			);
+			name = XanhIOSUITests;
+			packageProductDependencies = (
+			);
+			productName = XanhIOSUITests;
+			productReference = D1515C611F59B527ED056601 /* XanhIOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F715BF36937BE01A61EBF61D /* XanhIOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 57D4DB543065DAD07D829839 /* Build configuration list for PBXNativeTarget "XanhIOSTests" */;
+			buildPhases = (
+				E755ED648E8BF32C2E3BAE86 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BFAC92C1ABE69CCBF6C69783 /* PBXTargetDependency */,
+			);
+			name = XanhIOSTests;
+			packageProductDependencies = (
+			);
+			productName = XanhIOSTests;
+			productReference = CF255F25E11005D19FEACC22 /* XanhIOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E80358DCA7BA3F77B0A4904A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					D6F8F41FE570F81FAD060E59 = {
+						TestTargetID = D3CF8F72BE8BAB2E931C9962;
+					};
+				};
+			};
+			buildConfigurationList = BB27C9B64442ADB2FCF95163 /* Build configuration list for PBXProject "XanhIOS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FFDD06C6473C1B9440DC4F92;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DB0FDB4E66E77D49018D3CBD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D3CF8F72BE8BAB2E931C9962 /* XanhIOS */,
+				F715BF36937BE01A61EBF61D /* XanhIOSTests */,
+				D6F8F41FE570F81FAD060E59 /* XanhIOSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C419E2971584EBED27B859D0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4310DC974FC0EB6552E793D2 /* Assets.xcassets in Resources */,
+				D9D83CE332D100D60CB7EC5D /* PrivacyInfo.xcprivacy in Resources */,
+				75FE9656D5E08D7B2CCD7C11 /* blocker-public-key.txt in Resources */,
+				1B76F37F7492362E5589E835 /* content-rules.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6FF48AAC280D983F3E390080 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60496E025958E79CB1A1430E /* BrowserSmokeUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F5C0BFA786BF50F44EC9FDA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56F9F176965680160D0DCE28 /* BrowserCommands.swift in Sources */,
+				E2B8E0AF8275EFA7D43CA8AE /* BrowserDownloadCenter.swift in Sources */,
+				631D0C084A7CF3E6237353E6 /* BrowserModels.swift in Sources */,
+				F781738FF64FEE4FF901486F /* BrowserRepository.swift in Sources */,
+				B344D860084A9DBCF1C6C88C /* BrowserSession.swift in Sources */,
+				95F09C4249660304E1FA41F4 /* BrowserShellView.swift in Sources */,
+				5FF9561A699CE4156257F09C /* BrowserStore.swift in Sources */,
+				8F55C52E3C9E2887D0A1786D /* ContentRuleService.swift in Sources */,
+				84939C8368B742C3ECCDB648 /* CoreDataBrowserRepository.swift in Sources */,
+				BE28E0959336FB475A726367 /* DownloadsView.swift in Sources */,
+				E9348AA87A82A7CF126925F9 /* LibraryView.swift in Sources */,
+				65F1AFF8EDF7C9867F6145F9 /* SecureAccess.swift in Sources */,
+				3B74BDB8B2D2760A6998C989 /* SessionRestoration.swift in Sources */,
+				6A5465606A17F09F598B7B4D /* SettingsView.swift in Sources */,
+				3A38F55BD686D92D7D7EC92F /* TabGridView.swift in Sources */,
+				0B3D3C7BD6328357ECAD8DD2 /* URLPolicy.swift in Sources */,
+				E24CB94299F3B28191A5A285 /* WebContentProcessRecoveryPolicy.swift in Sources */,
+				37AB23EEC6F50B9D8954EC9A /* WebsiteDataStoreRegistry.swift in Sources */,
+				00C41750496218BF282CFEFB /* XanhBackupDocument.swift in Sources */,
+				15A943DD1A71F41BDB945F9A /* XanhHomeView.swift in Sources */,
+				EFDC5B830590429ACDAFA773 /* XanhIOSApp.swift in Sources */,
+				F49AAC3270EA7AC04DE8AF6E /* XanhPortableBackup.swift in Sources */,
+				0C417377828567E0A6971977 /* XanhTheme.swift in Sources */,
+				B205B96C42FC18E46E29E82C /* XanhWebView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E755ED648E8BF32C2E3BAE86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4444C33656BF8E9A2803EA21 /* BlockerArtifactCompilationTests.swift in Sources */,
+				F7169A48AEDBF04C1DB73314 /* BlockerExternalManifestTests.swift in Sources */,
+				CBE44C2E7A7FE407BCE1A6BA /* BlockerManifestTests.swift in Sources */,
+				7E8D5AC24FF8B13F95CD7C65 /* BrowserDownloadCenterTests.swift in Sources */,
+				C30E7B7559F6ADAFB599064D /* BrowserModelsTests.swift in Sources */,
+				8A95EF9DB3237311FABCFB07 /* BrowserPersistenceTests.swift in Sources */,
+				BEF97837318B9FD3B49C6204 /* BrowserStoreTests.swift in Sources */,
+				6631D31170150FC99F450BB5 /* SecureAccessTests.swift in Sources */,
+				531BAC6770B624938C689252 /* SessionRestorationTests.swift in Sources */,
+				1753E0253554D296985FFA24 /* URLPolicyTests.swift in Sources */,
+				392007DC226B05D944644E6D /* WebContentProcessRecoveryPolicyTests.swift in Sources */,
+				9CA95808C85623F13C326C82 /* XanhPortableBackupTests.swift in Sources */,
+				87514282DB76CE74B5DBED29 /* XanhWebViewContractTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2857E75E09F476826F514C03 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3CF8F72BE8BAB2E931C9962 /* XanhIOS */;
+			targetProxy = CB38A42A67775C181E3ECB7D /* PBXContainerItemProxy */;
+		};
+		BFAC92C1ABE69CCBF6C69783 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D3CF8F72BE8BAB2E931C9962 /* XanhIOS */;
+			targetProxy = DB534E21EBDD3E1A67DDCF02 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1EC5AA6298DB8974653633F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		31223C4A32408B54776FC7C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_ENTITLEMENTS = Config/XanhDebug.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.lamppkk.xanhbrowser.ios;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XANH_BLOCKER_MANIFEST_URL = "https://lamppkk.github.io/xanh-ios/blocker/manifest-v1.json";
+				XANH_BLOCKER_UPDATES_ENABLED = NO;
+				XANH_CLOUDKIT_ENABLED = NO;
+			};
+			name = Debug;
+		};
+		3792B4849DB762145F7ACB00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		4268CC3481705DD76FC475C3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.lamppkk.xanhbrowser.ios.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XanhIOS.app/XanhIOS";
+			};
+			name = Debug;
+		};
+		90ED3CB9D1A0E544FE02EFC5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.lamppkk.xanhbrowser.ios.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = XanhIOS;
+			};
+			name = Debug;
+		};
+		A487177ED36590A72342D0AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/XanhRelease.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.lamppkk.xanhbrowser.ios;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XANH_BLOCKER_MANIFEST_URL = "https://lamppkk.github.io/xanh-ios/blocker/manifest-v1.json";
+				XANH_BLOCKER_UPDATES_ENABLED = YES;
+				XANH_CLOUDKIT_ENABLED = YES;
+			};
+			name = Release;
+		};
+		C6C7AEECE5BF37C2123485C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.lamppkk.xanhbrowser.ios.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XanhIOS.app/XanhIOS";
+			};
+			name = Release;
+		};
+		D4086DCAF503459D7D0F2A2D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.lamppkk.xanhbrowser.ios.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = XanhIOS;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		57D4DB543065DAD07D829839 /* Build configuration list for PBXNativeTarget "XanhIOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4268CC3481705DD76FC475C3 /* Debug */,
+				C6C7AEECE5BF37C2123485C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BB27C9B64442ADB2FCF95163 /* Build configuration list for PBXProject "XanhIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1EC5AA6298DB8974653633F6 /* Debug */,
+				3792B4849DB762145F7ACB00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D7B5077F615855E075B0D4D5 /* Build configuration list for PBXNativeTarget "XanhIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31223C4A32408B54776FC7C7 /* Debug */,
+				A487177ED36590A72342D0AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		ECCA87FF7C69158A5A62108A /* Build configuration list for PBXNativeTarget "XanhIOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90ED3CB9D1A0E544FE02EFC5 /* Debug */,
+				D4086DCAF503459D7D0F2A2D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E80358DCA7BA3F77B0A4904A /* Project object */;
+}

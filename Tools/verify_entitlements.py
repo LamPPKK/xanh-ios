@@ -49,7 +49,7 @@ def verify_entitlements(entitlements, team_id: str, bundle_id: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Verify production entitlements extracted from the signed Fireball archive."
+        description="Verify production entitlements extracted from the signed Xanh archive."
     )
     parser.add_argument("--plist", type=Path, required=True)
     parser.add_argument("--team-id", required=True)

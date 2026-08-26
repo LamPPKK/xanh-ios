@@ -12,7 +12,7 @@ struct TabGridView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.fireballBackground.ignoresSafeArea()
+                Color.xanhBackground.ignoresSafeArea()
                 if horizontalSizeClass == .regular {
                     HStack(spacing: 0) {
                         spaceSidebar
@@ -76,13 +76,13 @@ struct TabGridView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .background(Color.fireballPanel.opacity(0.98))
-        .overlay(alignment: .bottom) { Rectangle().fill(Color.fireballBorder).frame(height: 1) }
+        .background(Color.xanhPanel.opacity(0.98))
+        .overlay(alignment: .bottom) { Rectangle().fill(Color.xanhBorder).frame(height: 1) }
     }
 
     private var spaceSidebar: some View {
         VStack(alignment: .leading, spacing: 10) {
-            FireballSectionLabel(title: "Spaces", index: "01")
+            XanhSectionLabel(title: "Spaces", index: "01")
                 .padding(.horizontal, 16)
                 .padding(.top, 18)
             ScrollView {
@@ -95,17 +95,17 @@ struct TabGridView: View {
             }
             Spacer(minLength: 0)
         }
-        .background(Color.fireballPanel)
+        .background(Color.xanhPanel)
     }
 
     private var tabGrid: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    FireballSectionLabel(title: "Tabs in this space", index: "02")
+                    XanhSectionLabel(title: "Tabs in this space", index: "02")
                     Text("\(store.tabsInSelectedSpace.count)")
                         .font(.caption.monospaced().weight(.black))
-                        .foregroundStyle(Color.fireballGreen)
+                        .foregroundStyle(Color.xanhGreen)
                 }
                 LazyVGrid(columns: columns, spacing: 14) {
                     ForEach(store.tabsInSelectedSpace) { tab in
@@ -124,23 +124,23 @@ struct TabGridView: View {
         } label: {
             HStack(spacing: 7) {
                 Circle()
-                    .fill(space.storageMode == .ephemeral ? Color.fireballOrange : Color.fireballGreen)
+                    .fill(space.storageMode == .ephemeral ? Color.xanhLeaf : Color.xanhGreen)
                     .frame(width: 7, height: 7)
                 Text(space.name.uppercased())
                 Spacer(minLength: compact ? 0 : 8)
                 Text("\(store.tabs.filter { $0.spaceID == space.id }.count)")
-                    .foregroundStyle(Color.fireballMuted)
+                    .foregroundStyle(Color.xanhMuted)
             }
             .font(.caption.monospaced().weight(.bold))
             .padding(.horizontal, 13)
             .frame(maxWidth: compact ? nil : .infinity, minHeight: 44, alignment: .leading)
             .background(
-                store.selectedSpaceID == space.id ? Color.fireballRaised : Color.clear,
+                store.selectedSpaceID == space.id ? Color.xanhRaised : Color.clear,
                 in: RoundedRectangle(cornerRadius: compact ? 22 : 12, style: .continuous)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: compact ? 22 : 12, style: .continuous)
-                    .stroke(store.selectedSpaceID == space.id ? Color.fireballGreen.opacity(0.55) : Color.fireballBorder)
+                    .stroke(store.selectedSpaceID == space.id ? Color.xanhGreen.opacity(0.55) : Color.xanhBorder)
             }
         }
         .buttonStyle(.plain)
@@ -173,22 +173,22 @@ struct TabGridView: View {
                 Image(systemName: "plus")
                     .font(.title2.weight(.medium))
                     .frame(width: 48, height: 48)
-                    .background(Color.fireballRaised, in: Circle())
+                    .background(Color.xanhRaised, in: Circle())
                 Text("NEW ORBIT")
                     .font(.headline.weight(.black))
                 Text("Open a clean tab in this space")
                     .font(.caption)
-                    .foregroundStyle(Color.fireballMuted)
+                    .foregroundStyle(Color.xanhMuted)
                     .multilineTextAlignment(.center)
             }
-            .foregroundStyle(Color.fireballGreen)
+            .foregroundStyle(Color.xanhGreen)
             .frame(maxWidth: .infinity, minHeight: 224)
             .padding(16)
-            .background(Color.fireballPanel)
+            .background(Color.xanhPanel)
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.fireballGreen.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [5, 5]))
+                    .stroke(Color.xanhGreen.opacity(0.35), style: StrokeStyle(lineWidth: 1, dash: [5, 5]))
             }
         }
         .buttonStyle(.plain)
@@ -210,11 +210,11 @@ private struct SwipeClosableTabCard: View {
     var body: some View {
         ZStack(alignment: .trailing) {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.fireballOrange.opacity(0.9))
+                .fill(Color.xanhLeaf.opacity(0.9))
                 .overlay(alignment: .trailing) {
                     Image(systemName: "trash.fill")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(Color.fireballBackground)
+                        .foregroundStyle(Color.xanhBackground)
                         .padding(.trailing, 24)
                 }
 
@@ -223,7 +223,7 @@ private struct SwipeClosableTabCard: View {
                     VStack(alignment: .leading, spacing: 0) {
                         ZStack(alignment: .bottomLeading) {
                             LinearGradient(
-                                colors: [Color.fireballRaised, Color.fireballPanel],
+                                colors: [Color.xanhRaised, Color.xanhPanel],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -234,13 +234,13 @@ private struct SwipeClosableTabCard: View {
                                     .clipped()
                             } else {
                                 ZStack {
-                                    FireballTrajectory()
+                                    XanhSignalField()
                                     if tab.url == nil {
-                                        FireballBrandMark(size: 72)
+                                        XanhBrandMark(size: 72)
                                     } else {
                                         Image(systemName: tab.isPrivate ? "eye.slash" : "globe.americas.fill")
                                             .font(.system(size: 32, weight: .light))
-                                            .foregroundStyle(tab.isPrivate ? Color.fireballOrange : Color.fireballGreen)
+                                            .foregroundStyle(tab.isPrivate ? Color.xanhLeaf : Color.xanhGreen)
                                     }
                                 }
                             }
@@ -250,33 +250,33 @@ private struct SwipeClosableTabCard: View {
                         VStack(alignment: .leading, spacing: 7) {
                             Text(isSelected ? "ACTIVE" : tab.isPinned ? "PINNED" : tab.isPrivate ? "PRIVATE" : "BACKGROUND")
                                 .font(.caption.monospaced().weight(.black))
-                                .foregroundStyle(isSelected ? Color.fireballBackground : Color.fireballCream)
+                                .foregroundStyle(isSelected ? Color.xanhBackground : Color.xanhCream)
                                 .padding(.horizontal, 9)
                                 .padding(.vertical, 5)
                                 .background(
-                                    isSelected ? Color.fireballGreen : Color.black.opacity(0.58),
+                                    isSelected ? Color.xanhGreen : Color.black.opacity(0.58),
                                     in: Capsule()
                                 )
                                 .fixedSize(horizontal: false, vertical: true)
                             Text(tab.title)
                                 .font(.headline.weight(.bold))
                                 .fixedSize(horizontal: false, vertical: true)
-                            Text(tab.url?.absoluteString ?? "Fireball home")
+                            Text(tab.url?.absoluteString ?? "Xanh home")
                                 .font(.caption)
-                                .foregroundStyle(Color.fireballMuted)
+                                .foregroundStyle(Color.xanhMuted)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         .padding(12)
                     }
-                    .background(Color.fireballPanel)
+                    .background(Color.xanhPanel)
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .overlay {
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .stroke(isSelected ? Color.fireballGreen : Color.white.opacity(0.1), lineWidth: 1)
+                            .stroke(isSelected ? Color.xanhGreen : Color.white.opacity(0.1), lineWidth: 1)
                     }
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("\(tab.title), \(tab.url?.host() ?? "Fireball home")")
+                .accessibilityLabel("\(tab.title), \(tab.url?.host() ?? "Xanh home")")
                 .accessibilityValue(accessibilityState)
                 .accessibilityHint("Double-tap to open. Swipe left to close. Pinned tabs are protected from automatic Archive.")
                 .accessibilityIdentifier("tab.card")
@@ -296,7 +296,7 @@ private struct SwipeClosableTabCard: View {
                                 .background(.black.opacity(0.58), in: Circle())
                         }
                         .buttonStyle(.plain)
-                        .foregroundStyle(tab.isPinned ? Color.fireballGreen : Color.fireballCream)
+                        .foregroundStyle(tab.isPinned ? Color.xanhGreen : Color.xanhCream)
                         .accessibilityLabel(tab.isPinned ? "Unpin \(tab.title)" : "Pin \(tab.title)")
                         .accessibilityIdentifier("tab.pin")
                     }

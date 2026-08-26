@@ -252,7 +252,7 @@ final class BlockerUpdateService {
                   let encodedRules = String(data: artifact, encoding: .utf8) else {
                 throw ContentRuleError.invalidEncoding
             }
-            let candidateIdentifier = "fireball-\(manifest.payload.version)-\(descriptor.identifier)"
+            let candidateIdentifier = "xanh-\(manifest.payload.version)-\(descriptor.identifier)"
             _ = try await compiler.compile(identifier: candidateIdentifier, encodedRules: encodedRules)
             candidateIdentifiers.append(candidateIdentifier)
         }
@@ -287,7 +287,7 @@ enum ContentRuleError: LocalizedError, Equatable {
         case .signatureInvalid: "The blocker manifest signature is invalid."
         case .unsupportedManifest: "The blocker manifest version is not supported."
         case .insecureArtifactURL: "Blocker updates must use HTTPS."
-        case .minimumVersionNotMet: "This blocker update requires a newer Fireball build."
+        case .minimumVersionNotMet: "This blocker update requires a newer Xanh build."
         case .invalidEncoding: "The blocker rules are not valid UTF-8."
         case .downloadFailed: "The blocker update could not be downloaded."
         case .compilationReturnedNoRule: "WebKit did not compile the blocker rules."

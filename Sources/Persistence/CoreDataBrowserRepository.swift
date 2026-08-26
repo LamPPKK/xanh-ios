@@ -4,7 +4,7 @@ import Foundation
 
 @MainActor
 final class CoreDataBrowserRepository: BrowserRepository {
-    static let cloudContainerIdentifier = "iCloud.com.fireball.browser"
+    static let cloudContainerIdentifier = "iCloud.io.github.lamppkk.xanhbrowser.ios"
 
     private enum Configuration {
         static let cloud = "Cloud"
@@ -30,6 +30,9 @@ final class CoreDataBrowserRepository: BrowserRepository {
 
     private static let tombstoneLifetime: TimeInterval = 30 * 24 * 60 * 60
     private static let settingsRecordID = "settings"
+    private static let retainedWebsiteDataTombstone = Data(
+        "xanh-portable-import-retain-website-data-v1".utf8
+    )
 
     private let container: NSPersistentCloudKitContainer
     private let cloudKitEnabled: Bool
@@ -58,7 +61,7 @@ final class CoreDataBrowserRepository: BrowserRepository {
             ? CKContainer(identifier: Self.cloudContainerIdentifier)
             : nil
         container = NSPersistentCloudKitContainer(
-            name: "FireballBrowser",
+            name: "XanhBrowser",
             managedObjectModel: Self.makeManagedObjectModel()
         )
         container.persistentStoreDescriptions = Self.makeStoreDescriptions(
@@ -143,8 +146,23 @@ final class CoreDataBrowserRepository: BrowserRepository {
     }
 
     func save(_ snapshot: BrowserSnapshot) throws {
+        try write(snapshot, now: currentDate(), overwriteExisting: false)
+    }
+
+    func savePortableImport(_ snapshot: BrowserSnapshot, importedAt: Date) throws {
+        try write(
+            XanhPortableBackup.rebasedForImport(snapshot, at: importedAt),
+            now: importedAt,
+            overwriteExisting: true
+        )
+    }
+
+    private func write(
+        _ snapshot: BrowserSnapshot,
+        now: Date,
+        overwriteExisting: Bool
+    ) throws {
         guard didLoadStores else { throw BrowserPersistenceError.storeNotLoaded }
-        let now = currentDate()
         let context = container.viewContext
         var committed = false
         defer {
@@ -153,6 +171,9 @@ final class CoreDataBrowserRepository: BrowserRepository {
             }
         }
 
+        let explicitCleanupProfileIDs = Set(
+            snapshot.profileDeletionCleanups.map { $0.profileID.rawValue.uuidString }
+        )
         try replace(
             kind: .profile,
             values: snapshot.profiles.filter { $0.storageMode == .persistent },
@@ -160,7 +181,28 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting,
+            tombstonePayload: { recordID, records in
+                if explicitCleanupProfileIDs.contains(recordID) {
+                    return Data()
+                }
+                let hasDestructiveTombstone = records.contains { record in
+                    record.value(forKey: "deletedAt") != nil
+                        && record.value(forKey: "payload") as? Data != Self.retainedWebsiteDataTombstone
+                }
+                if hasDestructiveTombstone {
+                    return Data()
+                }
+                let hasRetainedTombstone = records.contains { record in
+                    record.value(forKey: "deletedAt") != nil
+                        && record.value(forKey: "payload") as? Data == Self.retainedWebsiteDataTombstone
+                }
+                if overwriteExisting || hasRetainedTombstone {
+                    return Self.retainedWebsiteDataTombstone
+                }
+                return Data()
+            }
         )
         try replace(
             kind: .space,
@@ -169,7 +211,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         try replace(
             kind: .tab,
@@ -178,7 +221,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         let persistentProfileIDs = Set(
             snapshot.profiles
@@ -192,7 +236,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         try replace(
             kind: .blockerSiteException,
@@ -204,7 +249,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         try replace(
             kind: .bookmark,
@@ -213,7 +259,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         try replace(
             kind: .settings,
@@ -222,7 +269,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.synced,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         try replace(
             kind: .profileDeletionCleanup,
@@ -233,7 +281,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: Entity.local,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: false
         )
 
         let historyDestination = snapshot.settings.historySyncEnabled ? Entity.synced : Entity.local
@@ -245,7 +294,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: historyDestination,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
         try replace(
             kind: .history,
@@ -254,7 +304,8 @@ final class CoreDataBrowserRepository: BrowserRepository {
             modifiedAt: { $0.modifiedAt },
             entityName: historySource,
             context: context,
-            now: now
+            now: now,
+            overwriteExisting: overwriteExisting
         )
 
         try purgeExpiredTombstones(in: context, now: now)
@@ -354,7 +405,7 @@ final class CoreDataBrowserRepository: BrowserRepository {
         do {
             publishSyncStatus(Self.syncStatus(for: try await accountContainer.accountStatus()))
         } catch {
-            publishSyncStatus(.degraded("Fireball could not determine iCloud availability. Browsing continues locally."))
+            publishSyncStatus(.degraded("Xanh could not determine iCloud availability. Browsing continues locally."))
         }
     }
 
@@ -374,7 +425,7 @@ final class CoreDataBrowserRepository: BrowserRepository {
         case .temporarilyUnavailable:
             .degraded("iCloud is temporarily unavailable. Browsing continues locally.")
         case .couldNotDetermine:
-            .degraded("Fireball could not determine iCloud availability. Browsing continues locally.")
+            .degraded("Xanh could not determine iCloud availability. Browsing continues locally.")
         @unknown default:
             .degraded("iCloud status is unknown. Browsing continues locally.")
         }
@@ -432,6 +483,7 @@ final class CoreDataBrowserRepository: BrowserRepository {
         ).values.compactMap { candidates -> (ProfileID, Date)? in
             guard let latest = candidates.max(by: Self.isOlder),
                   let deletedAt = latest.value(forKey: "deletedAt") as? Date,
+                  latest.value(forKey: "payload") as? Data != Self.retainedWebsiteDataTombstone,
                   deletedAt >= cutoff,
                   let recordID = latest.value(forKey: "recordID") as? String,
                   let uuid = UUID(uuidString: recordID) else { return nil }
@@ -474,11 +526,13 @@ final class CoreDataBrowserRepository: BrowserRepository {
         modifiedAt: (Value) -> Date,
         entityName: String,
         context: NSManagedObjectContext,
-        now: Date
+        now: Date,
+        overwriteExisting: Bool,
+        tombstonePayload: ((String, [NSManagedObject]) -> Data)? = nil
     ) throws {
         let existing = try records(kind: kind, entityName: entityName, context: context)
         var recordsByID = Dictionary(grouping: existing, by: { $0.value(forKey: "recordID") as? String ?? "" })
-        let encoder = JSONEncoder.fireball
+        let encoder = JSONEncoder.xanh
 
         for value in values {
             let recordID = id(value)
@@ -486,12 +540,17 @@ final class CoreDataBrowserRepository: BrowserRepository {
             let record = candidates.max(by: Self.isOlder)
                 ?? NSEntityDescription.insertNewObject(forEntityName: entityName, into: context)
             for duplicate in candidates where duplicate !== record {
-                duplicate.setValue(Data(), forKey: "payload")
-                duplicate.setValue(now, forKey: "modifiedAt")
-                duplicate.setValue(now, forKey: "deletedAt")
+                if overwriteExisting {
+                    context.delete(duplicate)
+                } else {
+                    duplicate.setValue(Data(), forKey: "payload")
+                    duplicate.setValue(now, forKey: "modifiedAt")
+                    duplicate.setValue(now, forKey: "deletedAt")
+                }
             }
             let storedModifiedAt = record.value(forKey: "modifiedAt") as? Date ?? .distantPast
-            if record.value(forKey: "deletedAt") != nil || storedModifiedAt > modifiedAt(value) {
+            if !overwriteExisting,
+               record.value(forKey: "deletedAt") != nil || storedModifiedAt > modifiedAt(value) {
                 continue
             }
             record.setValue(recordID, forKey: "recordID")
@@ -502,8 +561,10 @@ final class CoreDataBrowserRepository: BrowserRepository {
         }
 
         for duplicates in recordsByID.values {
+            let recordID = duplicates.first?.value(forKey: "recordID") as? String ?? ""
+            let payload = tombstonePayload?(recordID, duplicates) ?? Data()
             for record in duplicates {
-                record.setValue(Data(), forKey: "payload")
+                record.setValue(payload, forKey: "payload")
                 record.setValue(now, forKey: "modifiedAt")
                 record.setValue(now, forKey: "deletedAt")
             }
@@ -520,7 +581,7 @@ final class CoreDataBrowserRepository: BrowserRepository {
             grouping: try records(kind: kind, entityName: entityName, context: context),
             by: { $0.value(forKey: "recordID") as? String ?? "" }
         )
-        let decoder = JSONDecoder.fireball
+        let decoder = JSONDecoder.xanh
         return try grouped.values.compactMap { candidates in
             guard let latest = candidates.max(by: Self.isOlder), latest.value(forKey: "deletedAt") == nil,
                   let payload = latest.value(forKey: "payload") as? Data, !payload.isEmpty else {
@@ -539,6 +600,104 @@ final class CoreDataBrowserRepository: BrowserRepository {
         request.predicate = NSPredicate(format: "kind == %@", kind.rawValue)
         return try context.fetch(request)
     }
+
+#if DEBUG
+    enum ProfileRecordStateForTesting {
+        case live(BrowserProfile)
+        case retainedTombstone
+        case destructiveTombstone
+    }
+
+    func duplicateSyncedRecordForTesting(kind rawKind: String, recordID: String) throws {
+        guard didLoadStores else { throw BrowserPersistenceError.storeNotLoaded }
+        let context = container.viewContext
+        let request = NSFetchRequest<NSManagedObject>(entityName: Entity.synced)
+        request.predicate = NSPredicate(
+            format: "kind == %@ AND recordID == %@",
+            rawKind,
+            recordID
+        )
+        guard let source = try context.fetch(request).first else {
+            throw BrowserPersistenceError.recordNotFound
+        }
+        let duplicate = NSEntityDescription.insertNewObject(
+            forEntityName: Entity.synced,
+            into: context
+        )
+        for key in ["recordID", "kind", "payload", "modifiedAt", "deletedAt"] {
+            duplicate.setValue(source.value(forKey: key), forKey: key)
+        }
+        try context.save()
+    }
+
+    func insertProfileRecordForTesting(
+        profileID: ProfileID,
+        state: ProfileRecordStateForTesting,
+        timestamp: Date
+    ) throws {
+        guard didLoadStores else { throw BrowserPersistenceError.storeNotLoaded }
+        let context = container.viewContext
+        let record = NSEntityDescription.insertNewObject(
+            forEntityName: Entity.synced,
+            into: context
+        )
+        record.setValue(profileID.rawValue.uuidString, forKey: "recordID")
+        record.setValue(RecordKind.profile.rawValue, forKey: "kind")
+        switch state {
+        case let .live(profile):
+            record.setValue(try JSONEncoder.xanh.encode(profile), forKey: "payload")
+            record.setValue(nil, forKey: "deletedAt")
+        case .retainedTombstone:
+            record.setValue(Self.retainedWebsiteDataTombstone, forKey: "payload")
+            record.setValue(timestamp, forKey: "deletedAt")
+        case .destructiveTombstone:
+            record.setValue(Data(), forKey: "payload")
+            record.setValue(timestamp, forKey: "deletedAt")
+        }
+        record.setValue(timestamp, forKey: "modifiedAt")
+        try context.save()
+    }
+
+    func profileTombstoneRetentionFlagsForTesting(profileID: ProfileID) throws -> [Bool] {
+        guard didLoadStores else { throw BrowserPersistenceError.storeNotLoaded }
+        let context = container.viewContext
+        let request = NSFetchRequest<NSManagedObject>(entityName: Entity.synced)
+        request.predicate = NSPredicate(
+            format: "kind == %@ AND recordID == %@ AND deletedAt != nil",
+            RecordKind.profile.rawValue,
+            profileID.rawValue.uuidString
+        )
+        return try context.fetch(request).map {
+            $0.value(forKey: "payload") as? Data == Self.retainedWebsiteDataTombstone
+        }
+    }
+
+    func deleteLocalProfileDeletionCleanupForTesting(profileID: ProfileID) throws {
+        guard didLoadStores else { throw BrowserPersistenceError.storeNotLoaded }
+        let context = container.viewContext
+        let request = NSFetchRequest<NSManagedObject>(entityName: Entity.local)
+        request.predicate = NSPredicate(
+            format: "kind == %@ AND recordID == %@",
+            RecordKind.profileDeletionCleanup.rawValue,
+            profileID.rawValue.uuidString
+        )
+        for record in try context.fetch(request) {
+            context.delete(record)
+        }
+        try context.save()
+    }
+
+    func syncedRecordCountForTesting(kind rawKind: String, recordID: String) throws -> Int {
+        guard didLoadStores else { throw BrowserPersistenceError.storeNotLoaded }
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: Entity.synced)
+        request.predicate = NSPredicate(
+            format: "kind == %@ AND recordID == %@",
+            rawKind,
+            recordID
+        )
+        return try container.viewContext.count(for: request)
+    }
+#endif
 
     private func purgeExpiredTombstones(in context: NSManagedObjectContext, now: Date) throws {
         let cutoff = now.addingTimeInterval(-Self.tombstoneLifetime)
@@ -566,14 +725,14 @@ final class CoreDataBrowserRepository: BrowserRepository {
         if inMemory {
             cloud.type = NSInMemoryStoreType
             local.type = NSInMemoryStoreType
-            cloud.url = URL(fileURLWithPath: "/tmp/fireball-cloud-\(UUID().uuidString)")
-            local.url = URL(fileURLWithPath: "/tmp/fireball-local-\(UUID().uuidString)")
+            cloud.url = URL(fileURLWithPath: "/tmp/xanh-cloud-\(UUID().uuidString)")
+            local.url = URL(fileURLWithPath: "/tmp/xanh-local-\(UUID().uuidString)")
         } else {
             let applicationSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("Fireball", isDirectory: true)
+                .appendingPathComponent("Xanh", isDirectory: true)
             try? FileManager.default.createDirectory(at: applicationSupport, withIntermediateDirectories: true)
-            cloud.url = applicationSupport.appendingPathComponent("FireballCloud.sqlite")
-            local.url = applicationSupport.appendingPathComponent("FireballLocal.sqlite")
+            cloud.url = applicationSupport.appendingPathComponent("XanhCloud.sqlite")
+            local.url = applicationSupport.appendingPathComponent("XanhLocal.sqlite")
         }
 
         cloud.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
@@ -639,16 +798,18 @@ private final class NotificationObserverToken: @unchecked Sendable {
 
 enum BrowserPersistenceError: LocalizedError {
     case storeNotLoaded
+    case recordNotFound
 
     var errorDescription: String? {
         switch self {
         case .storeNotLoaded: "The browser data store is not ready."
+        case .recordNotFound: "The requested browser record does not exist."
         }
     }
 }
 
 private extension JSONEncoder {
-    static var fireball: JSONEncoder {
+    static var xanh: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .millisecondsSince1970
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
@@ -657,7 +818,7 @@ private extension JSONEncoder {
 }
 
 private extension JSONDecoder {
-    static var fireball: JSONDecoder {
+    static var xanh: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .millisecondsSince1970
         return decoder

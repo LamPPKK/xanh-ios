@@ -35,6 +35,7 @@ protocol BrowserRepository: AnyObject {
     var onSyncStatusChange: (@MainActor @Sendable (BrowserSyncStatus) -> Void)? { get set }
     func load() async throws -> BrowserSnapshot
     func save(_ snapshot: BrowserSnapshot) throws
+    func savePortableImport(_ snapshot: BrowserSnapshot, importedAt: Date) throws
 }
 
 @MainActor
@@ -55,6 +56,10 @@ final class InMemoryBrowserRepository: BrowserRepository {
 
     func save(_ snapshot: BrowserSnapshot) throws {
         self.snapshot = snapshot
+    }
+
+    func savePortableImport(_ snapshot: BrowserSnapshot, importedAt: Date) throws {
+        self.snapshot = XanhPortableBackup.rebasedForImport(snapshot, at: importedAt)
     }
 
     func updateSyncStatus(_ status: BrowserSyncStatus) {

@@ -1,7 +1,7 @@
 import Foundation
 @preconcurrency import Network
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 @MainActor
 final class BrowserDownloadCenterTests: XCTestCase {
@@ -160,10 +160,10 @@ final class BrowserDownloadCenterTests: XCTestCase {
     func testWKWebViewDownloadsHTTPAttachmentEndToEnd() async throws {
         let fixture = try makeFixture()
         defer { fixture.cleanup() }
-        let expected = Data("Fireball download integration".utf8)
+        let expected = Data("Xanh download integration".utf8)
         let server = try LocalHTTPDownloadServer(
             body: expected,
-            filename: "fireball-fixture.txt"
+            filename: "xanh-fixture.txt"
         )
         defer { server.stop() }
         let port = try await server.start()
@@ -194,14 +194,14 @@ final class BrowserDownloadCenterTests: XCTestCase {
         }
         let item = try XCTUnwrap(fixture.center.items.first)
         XCTAssertEqual(item.state, .completed)
-        XCTAssertEqual(item.filename, "fireball-fixture.txt")
+        XCTAssertEqual(item.filename, "xanh-fixture.txt")
         XCTAssertEqual(try Data(contentsOf: item.destinationURL), expected)
         withExtendedLifetime(session) {}
     }
 
     private func makeFixture() throws -> Fixture {
         let root = FileManager.default.temporaryDirectory
-            .appending(path: "FireballDownloadTests-\(UUID().uuidString)", directoryHint: .isDirectory)
+            .appending(path: "XanhDownloadTests-\(UUID().uuidString)", directoryHint: .isDirectory)
         let persistentRoot = root.appending(path: "Downloads", directoryHint: .isDirectory)
         let privateRoot = root.appending(path: "Private", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -245,7 +245,7 @@ private struct Fixture {
 
 private final class LocalHTTPDownloadServer: @unchecked Sendable {
     private let listener: NWListener
-    private let queue = DispatchQueue(label: "com.fireball.browser.tests.download-server")
+    private let queue = DispatchQueue(label: "io.github.lamppkk.xanhbrowser.ios.tests.download-server")
     private let response: Data
     private let lock = NSLock()
     private var continuation: CheckedContinuation<UInt16, any Error>?

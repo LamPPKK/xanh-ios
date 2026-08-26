@@ -41,11 +41,11 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcodebuild -project FireballWebKit.xcodeproj \
-            -scheme FireballWebKit \
+          xcodebuild -project XanhIOS.xcodeproj \
+            -scheme XanhIOS \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/FireballWebKit.xcarchive" \
+            -archivePath "$RUNNER_TEMP/XanhIOS.xcarchive" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
@@ -57,21 +57,21 @@ jobs:
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          app="$RUNNER_TEMP/FireballWebKit.xcarchive/Products/Applications/FireballWebKit.app"
+          app="$RUNNER_TEMP/XanhIOS.xcarchive/Products/Applications/XanhIOS.app"
           test -d "$app"
           codesign --verify --deep --strict "$app"
-          codesign -d --entitlements :- "$app" > "$RUNNER_TEMP/FireballWebKit.entitlements.plist"
+          codesign -d --entitlements :- "$app" > "$RUNNER_TEMP/XanhIOS.entitlements.plist"
           python3 Tools/verify_entitlements.py \
-            --plist "$RUNNER_TEMP/FireballWebKit.entitlements.plist" \
+            --plist "$RUNNER_TEMP/XanhIOS.entitlements.plist" \
             --team-id "$APPLE_TEAM_ID" \
-            --bundle-id com.fireball.browser
+            --bundle-id io.github.lamppkk.xanhbrowser.ios
       - name: Export the archive
         env:
           ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           xcodebuild -exportArchive \
-            -archivePath "$RUNNER_TEMP/FireballWebKit.xcarchive" \
+            -archivePath "$RUNNER_TEMP/XanhIOS.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
             -exportOptionsPlist Config/ExportOptions.plist \
             -allowProvisioningUpdates \
@@ -91,11 +91,11 @@ jobs:
           )
           python3 Tools/verify_ipa.py \
             --ipa "$ipa" \
-            --bundle-id com.fireball.browser \
+            --bundle-id io.github.lamppkk.xanhbrowser.ios \
             --version 0.1.0 \
             --build "${{ github.run_number }}" \
             --blocker-public-key-base64 "$BLOCKER_PUBLIC_KEY_BASE64"
-          printf '%s  %s\n' "$expected_sha256" "$ipa" > "$RUNNER_TEMP/FireballWebKit.ipa.sha256"
+          printf '%s  %s\n' "$expected_sha256" "$ipa" > "$RUNNER_TEMP/XanhIOS.ipa.sha256"
           xcrun altool --validate-app -f "$ipa" -t ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
           {
             printf 'path=%s\n' "$ipa"
@@ -108,7 +108,7 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           ipa="${{ steps.exact_ipa.outputs.path }}"
-          shasum -a 256 --check "$RUNNER_TEMP/FireballWebKit.ipa.sha256"
+          shasum -a 256 --check "$RUNNER_TEMP/XanhIOS.ipa.sha256"
           xcrun altool --upload-app -f "$ipa" -t ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
       - name: Record candidate evidence
         run: |
@@ -126,12 +126,12 @@ jobs:
             --input "$RUNNER_TEMP/release-evidence-v1.json"
       - uses: actions/upload-artifact@v7
         with:
-          name: Fireball-WebKit-${{ github.run_number }}
+          name: Xanh-iOS-${{ github.run_number }}
           path: |
-            ${{ runner.temp }}/FireballWebKit.xcarchive
+            ${{ runner.temp }}/XanhIOS.xcarchive
             ${{ runner.temp }}/export/*.ipa
-            ${{ runner.temp }}/FireballWebKit.ipa.sha256
-            ${{ runner.temp }}/FireballWebKit.entitlements.plist
+            ${{ runner.temp }}/XanhIOS.ipa.sha256
+            ${{ runner.temp }}/XanhIOS.entitlements.plist
             ${{ runner.temp }}/release-evidence-v1.json
             Release/evidence-v1.schema.json
             Release/evidence-v1.corpus.json

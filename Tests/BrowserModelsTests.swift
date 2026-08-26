@@ -1,5 +1,5 @@
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 final class BrowserModelsTests: XCTestCase {
     func testDefaultProfileUsesStableUUIDAndBraveSearch() {

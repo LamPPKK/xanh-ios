@@ -11,7 +11,7 @@ from pathlib import Path, PurePosixPath
 
 
 REQUIRED_BLOCKER_MANIFEST_URL = (
-    "https://lamppkk.github.io/fireball-webkit/blocker/manifest-v1.json"
+    "https://lamppkk.github.io/xanh-ios/blocker/manifest-v1.json"
 )
 SENSITIVE_RESOURCE_SUFFIXES = {".key", ".p8", ".pem"}
 
@@ -71,12 +71,12 @@ def verify_ipa(
         except ValueError as error:
             errors.append(str(error))
 
-        if not enabled(info.get("FireballCloudKitEnabled")):
-            errors.append("FireballCloudKitEnabled must be enabled in the release IPA")
-        if not enabled(info.get("FireballBlockerUpdatesEnabled")):
-            errors.append("FireballBlockerUpdatesEnabled must be enabled in the release IPA")
-        if info.get("FireballBlockerManifestURL") != blocker_manifest_url:
-            errors.append(f"FireballBlockerManifestURL must be {blocker_manifest_url}")
+        if not enabled(info.get("XanhCloudKitEnabled")):
+            errors.append("XanhCloudKitEnabled must be enabled in the release IPA")
+        if not enabled(info.get("XanhBlockerUpdatesEnabled")):
+            errors.append("XanhBlockerUpdatesEnabled must be enabled in the release IPA")
+        if info.get("XanhBlockerManifestURL") != blocker_manifest_url:
+            errors.append(f"XanhBlockerManifestURL must be {blocker_manifest_url}")
         background_modes = info.get("UIBackgroundModes", [])
         if not isinstance(background_modes, list) or "remote-notification" not in background_modes:
             errors.append("UIBackgroundModes must include remote-notification")

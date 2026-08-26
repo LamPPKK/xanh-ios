@@ -1,5 +1,5 @@
 name: TestFlight beta bug
-description: Report a reproducible Fireball Browser beta problem without sensitive browsing data.
+description: Report a reproducible Xanh Browser beta problem without sensitive browsing data.
 title: "[Beta] "
 labels: [bug, testflight]
 body:
@@ -9,7 +9,7 @@ body:
   - type: input
     id: build
     attributes:
-      label: Fireball version and build
+      label: Xanh version and build
       placeholder: 0.1.0 (42)
     validations:
       required: true

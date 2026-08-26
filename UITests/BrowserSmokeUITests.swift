@@ -5,7 +5,7 @@ final class BrowserSmokeUITests: XCTestCase {
     @MainActor
     func testHomeTabGridAndSettingsAreReachable() throws {
         let app = XCUIApplication()
-        app.launchEnvironment["FIREBALL_UI_TESTING"] = "1"
+        app.launchEnvironment["XANH_UI_TESTING"] = "1"
         app.launch()
 
         XCTAssertTrue(app.textFields["browser.omnibox"].waitForExistence(timeout: 10))
@@ -22,7 +22,7 @@ final class BrowserSmokeUITests: XCTestCase {
     @MainActor
     func testTabCardSwipeClosesOneOfTwoTabs() {
         let app = XCUIApplication()
-        app.launchEnvironment["FIREBALL_UI_TESTING"] = "1"
+        app.launchEnvironment["XANH_UI_TESTING"] = "1"
         app.launch()
 
         let tabsButton = app.buttons["browser.tabs"]
@@ -61,7 +61,7 @@ final class BrowserSmokeUITests: XCTestCase {
     @MainActor
     func testBrowserChromePassesAccessibilityAudit() throws {
         let app = XCUIApplication()
-        app.launchEnvironment["FIREBALL_UI_TESTING"] = "1"
+        app.launchEnvironment["XANH_UI_TESTING"] = "1"
         app.launch()
 
         XCTAssertTrue(app.textFields["browser.omnibox"].waitForExistence(timeout: 10))
@@ -141,9 +141,9 @@ final class BrowserSmokeUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Downloads"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["No downloads"].exists)
         try performAccessibilityAudit(app)
-        if ProcessInfo.processInfo.environment["FIREBALL_CAPTURE_MEDIA"] == "1" {
+        if ProcessInfo.processInfo.environment["XANH_CAPTURE_MEDIA"] == "1" {
             let formFactor = UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone"
-            capture(app, named: "fireball-\(formFactor)-downloads")
+            capture(app, named: "xanh-\(formFactor)-downloads")
         }
     }
 
@@ -223,30 +223,30 @@ final class BrowserSmokeUITests: XCTestCase {
 
     @MainActor
     func testCaptureDocumentationMedia() throws {
-        guard ProcessInfo.processInfo.environment["FIREBALL_CAPTURE_MEDIA"] == "1" else {
+        guard ProcessInfo.processInfo.environment["XANH_CAPTURE_MEDIA"] == "1" else {
             throw XCTSkip("Documentation media is captured only by the explicit media workflow.")
         }
 
         let app = launchApp()
         let formFactor = UIDevice.current.userInterfaceIdiom == .pad ? "ipad" : "iphone"
-        capture(app, named: "fireball-\(formFactor)-home")
+        capture(app, named: "xanh-\(formFactor)-home")
 
         app.buttons["browser.tabs"].tap()
         XCTAssertTrue(app.buttons["tabs.new"].waitForExistence(timeout: 3))
         app.buttons["tabs.new"].tap()
         app.buttons["browser.tabs"].tap()
         XCTAssertEqual(app.buttons.matching(identifier: "tab.card").count, 2)
-        capture(app, named: "fireball-\(formFactor)-tabs")
+        capture(app, named: "xanh-\(formFactor)-tabs")
 
         app.buttons["Done"].tap()
         app.buttons["browser.settings"].tap()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 3))
-        capture(app, named: "fireball-\(formFactor)-settings")
+        capture(app, named: "xanh-\(formFactor)-settings")
 
         app.buttons["Done"].tap()
         app.buttons["browser.downloads"].tap()
         XCTAssertTrue(app.navigationBars["Downloads"].waitForExistence(timeout: 3))
-        capture(app, named: "fireball-\(formFactor)-downloads")
+        capture(app, named: "xanh-\(formFactor)-downloads")
     }
 
     @MainActor
@@ -256,7 +256,7 @@ final class BrowserSmokeUITests: XCTestCase {
         }
 
         let app = XCUIApplication()
-        app.launchEnvironment["FIREBALL_UI_TESTING"] = "1"
+        app.launchEnvironment["XANH_UI_TESTING"] = "1"
         app.launch()
 
         let omnibox = app.textFields["browser.omnibox"]
@@ -284,7 +284,7 @@ final class BrowserSmokeUITests: XCTestCase {
     @MainActor
     private func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchEnvironment["FIREBALL_UI_TESTING"] = "1"
+        app.launchEnvironment["XANH_UI_TESTING"] = "1"
         app.launch()
         XCTAssertTrue(app.textFields["browser.omnibox"].waitForExistence(timeout: 10))
         return app

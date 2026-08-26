@@ -1,7 +1,7 @@
 import CryptoKit
 import WebKit
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 @MainActor
 final class BlockerManifestTests: XCTestCase {
@@ -122,7 +122,7 @@ final class BlockerManifestTests: XCTestCase {
             artifacts: [
                 BlockerArtifact(
                     identifier: "easylist-001",
-                    url: URL(string: "https://github.com/LamPPKK/fireball-webkit/releases/download/rules/rules.json")!,
+                    url: URL(string: "https://github.com/LamPPKK/xanh-ios/releases/download/rules/rules.json")!,
                     sha256: SHA256.hash(data: artifact).map { String(format: "%02x", $0) }.joined()
                 )
             ],

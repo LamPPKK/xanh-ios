@@ -1,5 +1,5 @@
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 final class URLPolicyTests: XCTestCase {
     func testAddsHTTPSForHostname() throws {
@@ -40,6 +40,6 @@ final class URLPolicyTests: XCTestCase {
         XCTAssertTrue(policy.allowsNavigation(to: try XCTUnwrap(URL(string: "https://example.com"))))
         XCTAssertTrue(policy.allowsNavigation(to: try XCTUnwrap(URL(string: "about:blank"))))
         XCTAssertFalse(policy.allowsNavigation(to: try XCTUnwrap(URL(string: "data:text/html,secret"))))
-        XCTAssertFalse(policy.allowsNavigation(to: try XCTUnwrap(URL(string: "fireball://profile"))))
+        XCTAssertFalse(policy.allowsNavigation(to: try XCTUnwrap(URL(string: "xanh://profile"))))
     }
 }

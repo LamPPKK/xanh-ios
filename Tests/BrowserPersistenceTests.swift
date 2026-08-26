@@ -1,6 +1,6 @@
 import CloudKit
 import XCTest
-@testable import FireballWebKit
+@testable import XanhIOS
 
 @MainActor
 final class BrowserPersistenceTests: XCTestCase {
@@ -390,6 +390,294 @@ final class BrowserPersistenceTests: XCTestCase {
 
         let restored = try await repository.load()
         XCTAssertEqual(restored.profiles[0].name, "Newer")
+    }
+
+    func testPortableImportOverridesNewerRecordsTombstonesAndDuplicateCandidates() async throws {
+        var clock = Date(timeIntervalSince1970: 1_700_000_000)
+        let repository = CoreDataBrowserRepository(
+            inMemory: true,
+            cloudKitEnabled: false,
+            currentDate: { clock }
+        )
+        let baseline = clock
+        var stored = try await repository.load()
+        let defaultProfileID = try XCTUnwrap(stored.profiles.first?.id)
+        stored.profiles[0].name = "Newer local profile"
+        stored.profiles[0].modifiedAt = baseline.addingTimeInterval(500)
+        stored.settings.automaticArchiveInterval = .thirtyDays
+        stored.settings.modifiedAt = baseline.addingTimeInterval(500)
+
+        let revivedProfile = BrowserProfile(
+            id: ProfileID(),
+            name: "Deleted newer profile",
+            colorHex: "67F58A",
+            storageMode: .persistent,
+            searchProvider: .brave,
+            blockerEnabled: true,
+            modifiedAt: baseline.addingTimeInterval(500)
+        )
+        let revivedSpace = BrowserSpace(
+            id: SpaceID(),
+            profileID: revivedProfile.id,
+            name: "Deleted newer space",
+            sortIndex: 1,
+            selectedTabID: nil,
+            storageMode: .persistent,
+            modifiedAt: baseline.addingTimeInterval(500)
+        )
+        let revivedBookmark = Bookmark(
+            id: BookmarkID(),
+            profileID: defaultProfileID,
+            url: try XCTUnwrap(URL(string: "https://revived.example")),
+            title: "Deleted newer bookmark",
+            createdAt: baseline,
+            modifiedAt: baseline.addingTimeInterval(500)
+        )
+        stored.profiles.append(revivedProfile)
+        stored.spaces.append(revivedSpace)
+        stored.bookmarks = [revivedBookmark]
+        try repository.save(stored)
+        try repository.duplicateSyncedRecordForTesting(
+            kind: "profile",
+            recordID: defaultProfileID.rawValue.uuidString
+        )
+        XCTAssertEqual(
+            try repository.syncedRecordCountForTesting(
+                kind: "profile",
+                recordID: defaultProfileID.rawValue.uuidString
+            ),
+            2
+        )
+
+        clock = baseline.addingTimeInterval(600)
+        var withoutDeletedRecords = stored
+        withoutDeletedRecords.profiles.removeAll { $0.id == revivedProfile.id }
+        withoutDeletedRecords.spaces.removeAll { $0.id == revivedSpace.id }
+        withoutDeletedRecords.bookmarks = []
+        try repository.save(withoutDeletedRecords)
+
+        let oldDate = baseline.addingTimeInterval(-500)
+        var imported = stored
+        imported.profiles[0].name = "Imported older profile"
+        imported.profiles[0].modifiedAt = oldDate
+        imported.profiles[1].name = "Imported revived profile"
+        imported.profiles[1].modifiedAt = oldDate
+        imported.spaces[1].name = "Imported revived space"
+        imported.spaces[1].modifiedAt = oldDate
+        imported.bookmarks[0].title = "Imported revived bookmark"
+        imported.bookmarks[0].modifiedAt = oldDate
+        imported.settings.automaticArchiveInterval = .oneDay
+        imported.settings.modifiedAt = oldDate
+
+        let importedAt = baseline.addingTimeInterval(100)
+        try repository.savePortableImport(imported, importedAt: importedAt)
+        let restored = try await repository.load()
+
+        XCTAssertEqual(restored.profiles.first { $0.id == defaultProfileID }?.name, "Imported older profile")
+        XCTAssertEqual(restored.profiles.first { $0.id == revivedProfile.id }?.name, "Imported revived profile")
+        XCTAssertEqual(restored.bookmarks.map(\.title), ["Imported revived bookmark"])
+        XCTAssertEqual(restored.settings.automaticArchiveInterval, .oneDay)
+        XCTAssertTrue(restored.profiles.allSatisfy { $0.modifiedAt == importedAt })
+        XCTAssertEqual(restored.settings.modifiedAt, importedAt)
+        XCTAssertEqual(
+            try repository.syncedRecordCountForTesting(
+                kind: "profile",
+                recordID: defaultProfileID.rawValue.uuidString
+            ),
+            1
+        )
+    }
+
+    func testPortableImportRetainsWebsiteDataUntilAnExplicitProfileDeletion() async throws {
+        var clock = Date(timeIntervalSince1970: 1_700_000_000)
+        let repository = CoreDataBrowserRepository(
+            inMemory: true,
+            cloudKitEnabled: false,
+            currentDate: { clock }
+        )
+        var original = try await repository.load()
+        let retainedProfile = BrowserProfile(
+            id: ProfileID(),
+            name: "Website data must survive",
+            colorHex: "67F58A",
+            storageMode: .persistent,
+            searchProvider: .brave,
+            blockerEnabled: true,
+            modifiedAt: clock
+        )
+        let retainedSpace = BrowserSpace(
+            id: SpaceID(),
+            profileID: retainedProfile.id,
+            name: retainedProfile.name,
+            sortIndex: 1,
+            selectedTabID: nil,
+            storageMode: .persistent,
+            modifiedAt: clock
+        )
+        original.profiles.append(retainedProfile)
+        original.spaces.append(retainedSpace)
+        try repository.save(original)
+
+        var imported = original
+        imported.profiles.removeAll { $0.id == retainedProfile.id }
+        imported.spaces.removeAll { $0.id == retainedSpace.id }
+        clock = clock.addingTimeInterval(100)
+        try repository.savePortableImport(imported, importedAt: clock)
+
+        let afterImport = try await repository.load()
+        XCTAssertFalse(afterImport.profiles.contains { $0.id == retainedProfile.id })
+        XCTAssertFalse(afterImport.profileDeletionCleanups.contains {
+            $0.profileID == retainedProfile.id
+        })
+
+        try repository.save(afterImport)
+        let afterOrdinarySave = try await repository.load()
+        XCTAssertFalse(afterOrdinarySave.profileDeletionCleanups.contains {
+            $0.profileID == retainedProfile.id
+        })
+
+        clock = clock.addingTimeInterval(100)
+        try repository.savePortableImport(original, importedAt: clock)
+        var restoredProfile = try await repository.load()
+        XCTAssertTrue(restoredProfile.profiles.contains { $0.id == retainedProfile.id })
+
+        restoredProfile.profiles.removeAll { $0.id == retainedProfile.id }
+        restoredProfile.spaces.removeAll { $0.profileID == retainedProfile.id }
+        restoredProfile.profileDeletionCleanups.append(
+            ProfileDeletionCleanup(
+                profileID: retainedProfile.id,
+                createdAt: clock,
+                modifiedAt: clock
+            )
+        )
+        try repository.save(restoredProfile)
+
+        let afterExplicitDeletion = try await repository.load()
+        XCTAssertTrue(afterExplicitDeletion.profileDeletionCleanups.contains {
+            $0.profileID == retainedProfile.id && !$0.isComplete
+        })
+    }
+
+    func testPortableImportPreservesExplicitDeletionForRemoteCleanup() async throws {
+        var clock = Date(timeIntervalSince1970: 1_700_000_000)
+        let repository = CoreDataBrowserRepository(
+            inMemory: true,
+            cloudKitEnabled: false,
+            currentDate: { clock }
+        )
+        var snapshot = try await repository.load()
+        let deletedProfile = BrowserProfile(
+            id: ProfileID(),
+            name: "Explicitly deleted",
+            colorHex: "67F58A",
+            storageMode: .persistent,
+            searchProvider: .brave,
+            blockerEnabled: true,
+            modifiedAt: clock
+        )
+        snapshot.profiles.append(deletedProfile)
+        try repository.save(snapshot)
+
+        clock = clock.addingTimeInterval(100)
+        snapshot.profiles.removeAll { $0.id == deletedProfile.id }
+        try repository.save(snapshot)
+        var pendingImport = try await repository.load()
+        XCTAssertTrue(pendingImport.profileDeletionCleanups.contains {
+            $0.profileID == deletedProfile.id && !$0.isComplete
+        })
+
+        clock = clock.addingTimeInterval(100)
+        try repository.savePortableImport(pendingImport, importedAt: clock)
+        let afterImport = try await repository.load()
+        XCTAssertTrue(afterImport.profileDeletionCleanups.contains {
+            $0.profileID == deletedProfile.id && !$0.isComplete
+        })
+
+        pendingImport.profileDeletionCleanups = []
+        clock = clock.addingTimeInterval(100)
+        try repository.savePortableImport(pendingImport, importedAt: clock)
+        let destructiveFlags = try repository.profileTombstoneRetentionFlagsForTesting(
+            profileID: deletedProfile.id
+        )
+        XCTAssertFalse(destructiveFlags.isEmpty)
+        XCTAssertTrue(destructiveFlags.allSatisfy { !$0 })
+
+        try repository.deleteLocalProfileDeletionCleanupForTesting(profileID: deletedProfile.id)
+        let remoteReplica = try await repository.load()
+        XCTAssertTrue(remoteReplica.profileDeletionCleanups.contains {
+            $0.profileID == deletedProfile.id && !$0.isComplete
+        })
+    }
+
+    func testProfileTombstoneDuplicatesUseGroupWideDestructivePrecedence() async throws {
+        var clock = Date(timeIntervalSince1970: 1_700_000_000)
+        let repository = CoreDataBrowserRepository(
+            inMemory: true,
+            cloudKitEnabled: false,
+            currentDate: { clock }
+        )
+        var original = try await repository.load()
+        let omittedProfile = BrowserProfile(
+            id: ProfileID(),
+            name: "Omitted by import",
+            colorHex: "67F58A",
+            storageMode: .persistent,
+            searchProvider: .brave,
+            blockerEnabled: true,
+            modifiedAt: clock
+        )
+        original.profiles.append(omittedProfile)
+        try repository.save(original)
+
+        var imported = original
+        imported.profiles.removeAll { $0.id == omittedProfile.id }
+        clock = clock.addingTimeInterval(100)
+        try repository.savePortableImport(imported, importedAt: clock)
+        XCTAssertEqual(
+            try repository.profileTombstoneRetentionFlagsForTesting(profileID: omittedProfile.id),
+            [true]
+        )
+
+        try repository.insertProfileRecordForTesting(
+            profileID: omittedProfile.id,
+            state: .live(omittedProfile),
+            timestamp: clock
+        )
+        clock = clock.addingTimeInterval(100)
+        try repository.save(imported)
+        let retainedFlags = try repository.profileTombstoneRetentionFlagsForTesting(
+            profileID: omittedProfile.id
+        )
+        XCTAssertEqual(retainedFlags.count, 2)
+        XCTAssertTrue(retainedFlags.allSatisfy { $0 })
+        let retainedSnapshot = try await repository.load()
+        XCTAssertFalse(retainedSnapshot.profileDeletionCleanups.contains {
+            $0.profileID == omittedProfile.id
+        })
+
+        try repository.insertProfileRecordForTesting(
+            profileID: omittedProfile.id,
+            state: .live(omittedProfile),
+            timestamp: clock
+        )
+        try repository.insertProfileRecordForTesting(
+            profileID: omittedProfile.id,
+            state: .destructiveTombstone,
+            timestamp: clock
+        )
+        clock = clock.addingTimeInterval(100)
+        try repository.save(imported)
+        let destructiveFlags = try repository.profileTombstoneRetentionFlagsForTesting(
+            profileID: omittedProfile.id
+        )
+        XCTAssertEqual(destructiveFlags.count, 4)
+        XCTAssertTrue(destructiveFlags.allSatisfy { !$0 })
+
+        try repository.deleteLocalProfileDeletionCleanupForTesting(profileID: omittedProfile.id)
+        let remoteReplica = try await repository.load()
+        XCTAssertTrue(remoteReplica.profileDeletionCleanups.contains {
+            $0.profileID == omittedProfile.id && !$0.isComplete
+        })
     }
 
     func testTombstonePreventsOfflineBookmarkResurrection() async throws {

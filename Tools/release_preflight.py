@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 
 
-REQUIRED_BUNDLE_ID = "com.fireball.browser"
+REQUIRED_BUNDLE_ID = "io.github.lamppkk.xanhbrowser.ios"
 REQUIRED_MARKETING_VERSION = "0.1.0"
 
 

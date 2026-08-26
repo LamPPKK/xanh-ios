@@ -1,6 +1,6 @@
 import XCTest
 import WebKit
-@testable import FireballWebKit
+@testable import XanhIOS
 
 @MainActor
 final class BrowserStoreTests: XCTestCase {
@@ -206,7 +206,9 @@ final class BrowserStoreTests: XCTestCase {
         repository.snapshot.profiles.removeAll { $0.id == fixture.deletedProfileID }
         repository.snapshot.spaces.removeAll { $0.profileID == fixture.deletedProfileID }
         repository.snapshot.tabs.removeAll { removedSpaceIDs.contains($0.spaceID) }
-        repository.snapshot.profileDeletionCleanups = []
+        repository.snapshot.profileDeletionCleanups = [
+            ProfileDeletionCleanup(profileID: fixture.deletedProfileID),
+        ]
         repository.notifyExternalChange()
         for _ in 0 ..< 20 where dataStores.removedPersistentProfiles.isEmpty {
             await Task.yield()
@@ -218,6 +220,38 @@ final class BrowserStoreTests: XCTestCase {
         XCTAssertTrue(repository.snapshot.profileDeletionCleanups.first {
             $0.profileID == fixture.deletedProfileID
         }?.isComplete == true)
+    }
+
+    func testRemoteRetainedImportOmissionDoesNotDeleteWebsiteDataOrKeychainLock() async throws {
+        let fixture = makeTwoProfileSnapshot()
+        let events = TestEventLog()
+        let repository = RecordingBrowserRepository(snapshot: fixture.snapshot, events: events)
+        let dataStores = FakeWebsiteDataStoreManager()
+        let locks = FakeProfileLockStore()
+        let store = makeStore(repository: repository, profileLocks: locks, dataStores: dataStores)
+        await store.bootstrap()
+        events.entries.removeAll()
+
+        let removedSpaceIDs = Set(
+            repository.snapshot.spaces
+                .filter { $0.profileID == fixture.deletedProfileID }
+                .map(\.id)
+        )
+        repository.snapshot.profiles.removeAll { $0.id == fixture.deletedProfileID }
+        repository.snapshot.spaces.removeAll { $0.profileID == fixture.deletedProfileID }
+        repository.snapshot.tabs.removeAll { removedSpaceIDs.contains($0.spaceID) }
+        repository.snapshot.profileDeletionCleanups = []
+        repository.notifyExternalChange()
+        for _ in 0 ..< 50 where store.profiles.contains(where: { $0.id == fixture.deletedProfileID }) {
+            await Task.yield()
+        }
+
+        XCTAssertFalse(store.profiles.contains { $0.id == fixture.deletedProfileID })
+        XCTAssertTrue(store.profileDeletionCleanups.isEmpty)
+        XCTAssertTrue(dataStores.removedPersistentProfiles.isEmpty)
+        XCTAssertTrue(locks.disabledProfiles.isEmpty)
+        XCTAssertTrue(repository.snapshot.profileDeletionCleanups.isEmpty)
+        XCTAssertFalse(events.entries.contains("save"))
     }
 
     func testPrivateSpaceIsMemoryOnly() async throws {
@@ -616,6 +650,141 @@ final class BrowserStoreTests: XCTestCase {
         XCTAssertFalse(store.selectedProfileIsLocked)
     }
 
+    func testPortableImportReplacesRegularMetadataAndPreservesPrivateRuntimeState() async throws {
+        let repository = InMemoryBrowserRepository(snapshot: .initial())
+        let store = makeStore(repository: repository)
+        await store.bootstrap()
+        store.createPrivateSpace()
+        let privateProfileID = try XCTUnwrap(
+            store.profiles.first(where: { $0.storageMode == .ephemeral })?.id
+        )
+        let privateTabID = try XCTUnwrap(
+            store.tabs.first(where: { $0.storageMode == .ephemeral })?.id
+        )
+
+        var imported = BrowserSnapshot.initial(now: Date(timeIntervalSince1970: 1_700_000_000))
+        imported.profiles[0].name = "Imported profile"
+        let importedSpaceID = imported.spaces[0].id
+        let importedTab = BrowserTab(
+            id: TabID(),
+            spaceID: importedSpaceID,
+            url: URL(string: "https://imported.example"),
+            title: "Imported tab",
+            sortIndex: 0,
+            lastActiveAt: .now,
+            storageMode: .persistent,
+            modifiedAt: .now
+        )
+        imported.tabs = [importedTab]
+        imported.spaces[0].selectedTabID = importedTab.id
+        imported.settings.lastSelectedSpaceID = importedSpaceID
+        let encoded = try XanhPortableBackup.encode(imported)
+
+        let importedAt = Date(timeIntervalSince1970: 1_800_000_000)
+        try store.importPortableBackupData(encoded, now: importedAt)
+
+        XCTAssertTrue(store.profiles.contains { $0.name == "Imported profile" })
+        XCTAssertTrue(store.profiles.contains { $0.id == privateProfileID && $0.storageMode == .ephemeral })
+        XCTAssertTrue(store.tabs.contains { $0.id == privateTabID && $0.storageMode == .ephemeral })
+        let persisted = try await repository.load()
+        XCTAssertEqual(persisted.profiles.map(\.name), ["Imported profile"])
+        XCTAssertTrue(persisted.profiles.allSatisfy { $0.modifiedAt == importedAt })
+        XCTAssertEqual(persisted.settings.modifiedAt, importedAt)
+        XCTAssertTrue(persisted.profiles.allSatisfy { $0.storageMode == .persistent })
+        XCTAssertTrue(persisted.tabs.allSatisfy { $0.storageMode == .persistent })
+    }
+
+    func testPortableImportRejectsEveryPrivateRuntimeIDCollisionBeforeSaving() async throws {
+        enum CollisionCase: CaseIterable {
+            case profile
+            case space
+            case tab
+            case siteException
+        }
+
+        for collision in CollisionCase.allCases {
+            let repository = RecordingBrowserRepository(snapshot: .initial())
+            let store = makeStore(repository: repository)
+            await store.bootstrap()
+            store.createPrivateSpace()
+
+            let privateProfile = try XCTUnwrap(
+                store.profiles.first { $0.storageMode == .ephemeral }
+            )
+            let privateSpace = try XCTUnwrap(
+                store.spaces.first { $0.storageMode == .ephemeral }
+            )
+            let privateTab = try XCTUnwrap(
+                store.tabs.first { $0.storageMode == .ephemeral }
+            )
+            let privateException = BlockerSiteException(
+                id: BlockerSiteExceptionID(),
+                profileID: privateProfile.id,
+                host: "private.example",
+                createdAt: .now,
+                modifiedAt: .now
+            )
+            store.blockerSiteExceptions.append(privateException)
+
+            let imported = makePortableImportSnapshot(
+                profileID: collision == .profile ? privateProfile.id : ProfileID(),
+                spaceID: collision == .space ? privateSpace.id : SpaceID(),
+                tabID: collision == .tab ? privateTab.id : TabID(),
+                exceptionID: collision == .siteException
+                    ? privateException.id
+                    : BlockerSiteExceptionID()
+            )
+            let data = try XanhPortableBackup.encode(imported)
+            let originalProfiles = store.profiles
+            let originalSpaces = store.spaces
+            let originalTabs = store.tabs
+            let originalExceptions = store.blockerSiteExceptions
+            let originalSelectedSpaceID = store.selectedSpaceID
+            let originalSelectedTabID = store.selectedTabID
+
+            XCTAssertThrowsError(try store.importPortableBackupData(data), "\(collision)")
+            XCTAssertEqual(repository.portableImportSaveCount, 0, "\(collision)")
+            XCTAssertEqual(store.profiles, originalProfiles, "\(collision)")
+            XCTAssertEqual(store.spaces, originalSpaces, "\(collision)")
+            XCTAssertEqual(store.tabs, originalTabs, "\(collision)")
+            XCTAssertEqual(store.blockerSiteExceptions, originalExceptions, "\(collision)")
+            XCTAssertEqual(store.selectedSpaceID, originalSelectedSpaceID, "\(collision)")
+            XCTAssertEqual(store.selectedTabID, originalSelectedTabID, "\(collision)")
+        }
+    }
+
+    func testPortableImportRollsBackWhenRepositorySaveFails() async throws {
+        let repository = RecordingBrowserRepository(snapshot: .initial())
+        let store = makeStore(repository: repository)
+        await store.bootstrap()
+        let originalProfileIDs = store.profiles.map(\.id)
+        let originalTabIDs = store.tabs.map(\.id)
+
+        var imported = BrowserSnapshot.initial(now: Date(timeIntervalSince1970: 1_700_000_000))
+        imported.profiles[0].name = "Must roll back"
+        let spaceID = imported.spaces[0].id
+        let tab = BrowserTab(
+            id: TabID(),
+            spaceID: spaceID,
+            url: nil,
+            title: "New Tab",
+            sortIndex: 0,
+            lastActiveAt: .now,
+            storageMode: .persistent,
+            modifiedAt: .now
+        )
+        imported.tabs = [tab]
+        imported.spaces[0].selectedTabID = tab.id
+        imported.settings.lastSelectedSpaceID = spaceID
+        let encoded = try XanhPortableBackup.encode(imported)
+        repository.saveResult = .failure(TestFailure.expected)
+
+        XCTAssertThrowsError(try store.importPortableBackupData(encoded))
+        XCTAssertEqual(store.profiles.map(\.id), originalProfileIDs)
+        XCTAssertEqual(store.tabs.map(\.id), originalTabIDs)
+        XCTAssertFalse(store.profiles.contains { $0.name == "Must roll back" })
+    }
+
     private func makeStore(
         repository: any BrowserRepository,
         profileLocks: FakeProfileLockStore = FakeProfileLockStore(),
@@ -667,6 +836,62 @@ final class BrowserStoreTests: XCTestCase {
             )
         )
         return (snapshot, profile.id)
+    }
+
+    private func makePortableImportSnapshot(
+        profileID: ProfileID,
+        spaceID: SpaceID,
+        tabID: TabID,
+        exceptionID: BlockerSiteExceptionID
+    ) -> BrowserSnapshot {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let profile = BrowserProfile(
+            id: profileID,
+            name: "Imported",
+            colorHex: "67F58A",
+            storageMode: .persistent,
+            searchProvider: .brave,
+            blockerEnabled: true,
+            modifiedAt: now
+        )
+        let space = BrowserSpace(
+            id: spaceID,
+            profileID: profileID,
+            name: "Imported",
+            sortIndex: 0,
+            selectedTabID: tabID,
+            storageMode: .persistent,
+            modifiedAt: now
+        )
+        let tab = BrowserTab(
+            id: tabID,
+            spaceID: spaceID,
+            url: URL(string: "https://imported.example"),
+            title: "Imported",
+            sortIndex: 0,
+            lastActiveAt: now,
+            storageMode: .persistent,
+            modifiedAt: now
+        )
+        return BrowserSnapshot(
+            profiles: [profile],
+            spaces: [space],
+            tabs: [tab],
+            archivedTabs: [],
+            blockerSiteExceptions: [
+                BlockerSiteException(
+                    id: exceptionID,
+                    profileID: profileID,
+                    host: "imported.example",
+                    createdAt: now,
+                    modifiedAt: now
+                ),
+            ],
+            bookmarks: [],
+            history: [],
+            profileDeletionCleanups: [],
+            settings: BrowserSettings(lastSelectedSpaceID: spaceID, modifiedAt: now)
+        )
     }
 }
 
@@ -745,6 +970,7 @@ private final class RecordingBrowserRepository: BrowserRepository {
     private(set) var syncStatus: BrowserSyncStatus = .localOnly
     var onExternalChange: (@MainActor @Sendable () -> Void)?
     var onSyncStatusChange: (@MainActor @Sendable (BrowserSyncStatus) -> Void)?
+    private(set) var portableImportSaveCount = 0
     private let events: TestEventLog?
 
     init(snapshot: BrowserSnapshot, events: TestEventLog? = nil) {
@@ -760,6 +986,11 @@ private final class RecordingBrowserRepository: BrowserRepository {
         events?.entries.append("save")
         try saveResult.get()
         self.snapshot = snapshot
+    }
+
+    func savePortableImport(_ snapshot: BrowserSnapshot, importedAt: Date) throws {
+        portableImportSaveCount += 1
+        try save(XanhPortableBackup.rebasedForImport(snapshot, at: importedAt))
     }
 
     func notifyExternalChange() {
