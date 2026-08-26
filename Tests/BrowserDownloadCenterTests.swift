@@ -1,5 +1,4 @@
 import Foundation
-@preconcurrency import Network
 import XCTest
 @testable import XanhIOS
 
@@ -157,16 +156,10 @@ final class BrowserDownloadCenterTests: XCTestCase {
         XCTAssertEqual(fixture.center.items.first?.profileID, originalProfile)
     }
 
-    func testWKWebViewDownloadsHTTPAttachmentEndToEnd() async throws {
+    func testWKWebViewDownloadsBlobEndToEnd() async throws {
         let fixture = try makeFixture()
         defer { fixture.cleanup() }
         let expected = Data("Xanh download integration".utf8)
-        let server = try LocalHTTPDownloadServer(
-            body: expected,
-            filename: "xanh-fixture.txt"
-        )
-        defer { server.stop() }
-        let port = try await server.start()
         let profile = BrowserProfile.regularDefault()
         let tabID = TabID()
         let session = BrowserSession(
@@ -185,10 +178,31 @@ final class BrowserDownloadCenterTests: XCTestCase {
             )
             downloadStarted.fulfill()
         }
+        let pageReady = expectation(description: "WKWebView loaded the in-memory download fixture")
+        session.onNavigationFinished = { _ in
+            pageReady.fulfill()
+        }
+        let fixtureHTML = """
+        <!doctype html>
+        <html>
+          <body>
+            <a id="download" download="xanh-fixture.txt">Download fixture</a>
+            <script>
+              const payload = new Blob(["Xanh download integration"], { type: "text/plain" });
+              document.getElementById("download").href = URL.createObjectURL(payload);
+            </script>
+          </body>
+        </html>
+        """
 
-        session.load(try XCTUnwrap(URL(string: "http://127.0.0.1:\(port)/download")))
+        session.webView.loadHTMLString(
+            fixtureHTML,
+            baseURL: try XCTUnwrap(URL(string: "https://download-fixture.invalid"))
+        )
+        await fulfillment(of: [pageReady], timeout: 10)
+        try await session.webView.evaluateJavaScript("document.getElementById('download').click()")
 
-        await fulfillment(of: [downloadStarted], timeout: 15)
+        await fulfillment(of: [downloadStarted], timeout: 10)
         for _ in 0 ..< 300 where fixture.center.items.first?.state != .completed {
             try await Task.sleep(for: .milliseconds(50))
         }
@@ -240,74 +254,5 @@ private struct Fixture {
 
     func cleanup() {
         try? FileManager.default.removeItem(at: root)
-    }
-}
-
-private final class LocalHTTPDownloadServer: @unchecked Sendable {
-    private let listener: NWListener
-    private let queue = DispatchQueue(label: "io.github.lamppkk.xanhbrowser.ios.tests.download-server")
-    private let response: Data
-    private let lock = NSLock()
-    private var continuation: CheckedContinuation<UInt16, any Error>?
-
-    init(body: Data, filename: String) throws {
-        listener = try NWListener(using: .tcp, on: .any)
-        var payload = Data(
-            "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"\(filename)\"\r\nContent-Length: \(body.count)\r\nConnection: close\r\n\r\n".utf8
-        )
-        payload.append(body)
-        response = payload
-
-        listener.newConnectionHandler = { [weak self] connection in
-            guard let self else { return }
-            connection.start(queue: self.queue)
-            connection.receive(minimumIncompleteLength: 1, maximumLength: 64 * 1_024) { [weak self] _, _, _, error in
-                guard let self else { return }
-                if error != nil {
-                    connection.cancel()
-                    return
-                }
-                connection.send(content: self.response, completion: .contentProcessed { _ in
-                    connection.cancel()
-                })
-            }
-        }
-    }
-
-    func start() async throws -> UInt16 {
-        try await withCheckedThrowingContinuation { continuation in
-            lock.withLock {
-                self.continuation = continuation
-            }
-            listener.stateUpdateHandler = { [weak self] state in
-                guard let self else { return }
-                switch state {
-                case .ready:
-                    guard let port = self.listener.port else {
-                        self.finishStart(.failure(BrowserDownloadError.storageUnavailable))
-                        return
-                    }
-                    self.finishStart(.success(port.rawValue))
-                case let .failed(error):
-                    self.finishStart(.failure(error))
-                default:
-                    break
-                }
-            }
-            listener.start(queue: queue)
-        }
-    }
-
-    func stop() {
-        listener.cancel()
-    }
-
-    private func finishStart(_ result: Result<UInt16, any Error>) {
-        let pending = lock.withLock {
-            let value = continuation
-            continuation = nil
-            return value
-        }
-        pending?.resume(with: result)
     }
 }
