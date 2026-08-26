@@ -1,94 +1,146 @@
-# Xanh iOS
+<p align="center">
+  <img src="Brand/XanhBrowserLogo.png" width="112" alt="Xanh Browser four-arrow mark">
+</p>
 
-[![CI](https://github.com/LamPPKK/xanh-ios/actions/workflows/ci.yml/badge.svg)](https://github.com/LamPPKK/xanh-ios/actions/workflows/ci.yml)
-[![iOS 18+](https://img.shields.io/badge/iOS%20%2F%20iPadOS-18%2B-67F58A)](https://developer.apple.com/ios/)
-[![Version](https://img.shields.io/badge/version-0.1.0-4DD46B)](Release/TESTFLIGHT.md)
+<h1 align="center">Xanh iOS</h1>
 
-Xanh iOS is the native SwiftUI member of the Xanh Browser family for iPhone and iPad. It keeps WebKit's sandboxed process model, separates website data by profile, leaves private spaces out of restore, and ships without a telemetry SDK.
+<p align="center">
+  A private, native browser for iPhone and iPad, built with SwiftUI and Apple WebKit.
+</p>
 
-<img src="Brand/XanhBrowserLogo.png" width="104" alt="Xanh Browser arrow mark">
+<p align="center">
+  <a href="https://github.com/LamPPKK/xanh-ios/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/LamPPKK/xanh-ios/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://developer.apple.com/ios/"><img alt="iOS and iPadOS 18 or newer" src="https://img.shields.io/badge/iOS%20%2F%20iPadOS-18%2B-67F58A"></a>
+  <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6.0-F05138">
+  <a href="Release/TESTFLIGHT.md"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-4DD46B"></a>
+</p>
 
-The centered four-arrow mark and a deep forest palette form the shared Xanh
-identity. The iOS app uses native SwiftUI sheets and controls, a floating bottom
-omnibox, adaptive iPad composition, Dynamic Type and 44-point-or-larger touch
-targets. Product tokens and component rules are recorded in
-[`design-system/xanh-ios/MASTER.md`](design-system/xanh-ios/MASTER.md)
-and [`pages/browser-shell.md`](design-system/xanh-ios/pages/browser-shell.md).
+Xanh iOS is the Apple-platform member of the Xanh Browser family. It combines
+native SwiftUI controls with isolated browsing profiles, ephemeral private
+spaces, content blocking, downloads, portable metadata backup, and optional
+CloudKit metadata sync. The app contains no proprietary telemetry SDK.
 
-Marketing version `0.1.0` · Bundle identifier `io.github.lamppkk.xanhbrowser.ios` · Default search Brave Search · External TestFlight candidate
+> **Pre-release status:** the current `main` branch passes its hosted iPhone,
+> iPad, accessibility, configuration, and tooling CI lanes. App Store signing,
+> production CloudKit behavior, physical-device testing, and external TestFlight
+> review remain separate release gates.
 
-The previous product screenshots were intentionally removed during the Xanh iOS
-rebrand. New previews must be captured from a verified Xanh build; this README
-does not relabel legacy captures as current evidence.
+Marketing version `0.1.0` · Bundle identifier
+`io.github.lamppkk.xanhbrowser.ios` · Deployment target iOS/iPadOS 18+
 
-## What is implemented
+## Preview
+
+The former Fireball screenshots were removed during the Xanh rebrand. Verified
+Xanh iPhone and iPad captures have not yet been published, and legacy images
+will not be relabelled as current product evidence.
+
+The visual system uses the centered four-arrow mark, a forest-green palette,
+native sheets and controls, a floating bottom address bar, and an adaptive iPad
+layout. See the [design system](design-system/xanh-ios/MASTER.md) and
+[browser-shell specification](design-system/xanh-ios/pages/browser-shell.md).
+
+## Highlights
 
 ### Profiles, spaces, and tabs
 
-- Stable UUIDs for profiles, spaces, tabs, archived tabs, bookmarks, and history visits.
-- A profile owns one persistent `WKWebsiteDataStore(forIdentifier:)`; multiple spaces may share that profile.
-- A private space uses `WKWebsiteDataStore.nonPersistent()` and never persists tabs, history, or snapshots.
-- Adaptive iPhone tab grid and iPad sidebar/grid, swipe-to-close, popup-to-tab handling, native home, bookmarks, and history.
-- Arc-style pinned tabs sort ahead of regular tabs and are protected from automatic Archive. Pin state follows the tab through regular persistence and iCloud metadata sync; private pin state remains memory-only.
-- Arc-inspired Archive: closing a regular web tab keeps bounded URL/title metadata for 30 days (up to 200 entries per profile), with one-tap restore from Library. Automatic Archive can be disabled or set to 1, 7, or 30 inactive days; active, pinned, Home, and private tabs are never moved automatically.
-- Regular tab restoration after relaunch and LRU release of background WebViews under memory pressure.
+- Separate persistent `WKWebsiteDataStore` instances for regular profiles.
+- Non-persistent private spaces that do not enter restore, CloudKit, backup, or
+  browser history.
+- Regular and pinned tabs, iPhone tab grid, adaptive iPad sidebar/grid, popup
+  handling, bookmarks, history, and relaunch restoration.
+- A bounded Archive for closed regular tabs: up to 200 entries per profile,
+  retained for 30 days, with optional automatic archiving after 1, 7, or 30
+  inactive days. Active, pinned, Home, and private tabs are excluded from
+  automatic archiving; manually closing a regular pinned tab can archive it
+  while preserving its pinned state.
+- Release of background WebViews when the app receives a memory warning.
 
-### Browsing and resilience
+### Browsing and recovery
 
-- `XanhWebView` is the application embedding boundary and implements the Apple adapter contract from Xanh WebView `0.1.0-alpha.1`.
-- The backend and fallback are both truthfully reported as Apple system `WKWebView`; Xanh iOS does not claim to bundle a custom iOS browser engine.
-- Bottom omnibox with Brave Search by default and DuckDuckGo, Google, or Bing per profile.
-- Back, Forward, Reload, Home, bookmarks managed from Library, native URL sharing, and focused-scene iPad keyboard commands.
-- URL policy admits HTTP and HTTPS while Apple Transport Security remains enforced. `mailto:` and `tel:` require confirmation; script, data, file, and custom schemes are blocked.
-- If WebKit terminates the active content process, Xanh retries once. A repeated failure stops the loop and offers explicit Reload or Open Home recovery for that exact tab. A terminated background session is discarded and recreated only when needed.
+- Brave Search by default, with DuckDuckGo, Google, and Bing available per
+  profile.
+- Back, Forward, Reload, Home, native URL sharing, and focused-scene iPad
+  keyboard commands.
+- HTTP and HTTPS navigation under Apple Transport Security. `mailto:` and
+  `tel:` require confirmation; script, data, file, and custom schemes are
+  rejected.
+- Bounded WebKit process recovery: one automatic retry for the active page,
+  followed by explicit Reload or Open Home actions if failure repeats.
 
 ### Downloads
 
-- Native `WKDownload` handling for HTTP(S) and page-scoped `blob:` download links, `Content-Disposition: attachment`, and MIME types WebKit cannot display.
-- A Xanh transfer tray shows live system progress and supports pause, resume when the server supplies resume data, native sharing, and deletion.
-- Regular files live in `Xanh Downloads`, remain visible after relaunch, and are exposed through the iOS Files integration. Filename normalization and collision suffixes keep destinations inside that directory.
-- Private downloads use a cache-only directory, never enter browser persistence or CloudKit, and are removed when their private space closes or Xanh next launches.
-- Media-link discovery and BitTorrent are desktop Blink workstreams; this WebKit beta does not claim either feature.
+- Native `WKDownload` support for HTTP(S), page-scoped `blob:` links,
+  attachment responses, and non-displayable MIME types.
+- Live progress, pause, resume when WebKit provides resume data, sharing, and
+  deletion from the transfer tray.
+- Regular files are kept in `Xanh Downloads` and exposed through Files.
+  Private downloads use cache-only storage and are removed when the private
+  space closes or the app next launches.
 
-### Privacy and sync
+### Privacy and content blocking
 
-- Private CloudKit metadata sync through `NSPersistentCloudKitContainer` with a local replica, last-writer-wins UUID conflict handling, and 30-day tombstones.
-- Profiles, spaces, regular tabs, regular-tab Archive metadata, bookmarks, settings, and exact-host Shields exceptions may sync; cookies, cache, credentials, biometric state, snapshots, private tabs, and private-space exceptions never do.
-- Profile deletion commits its synced metadata tombstone before destructive work. Each device then uses a local-only retry ledger to remove that profile's `WKWebsiteDataStore` and Keychain lock on launch/foreground, including after an offline device later receives the tombstone; cleanup progress, cookies, cache, and lock material never enter CloudKit.
-- History sync is opt-in, disclosed before enabling, and limited to 90 days.
-- Per-profile signed content-blocker policy with last-known-good rollback and a Shields control in the omnibox. Site exceptions match only the exact hostname, remain isolated by profile, and apply on the next navigation or explicit reload so Xanh never destroys a form or media session without the user's action.
-- Optional profile lock through Keychain and LocalAuthentication, private-space foreground lock, and an app-switcher privacy cover.
-- No proprietary telemetry SDK and no default analytics upload.
+- Optional profile protection with Keychain and LocalAuthentication, a private
+  foreground lock, and an app-switcher privacy cover.
+- Signed content-rule manifests derived from pinned EasyList and EasyPrivacy
+  revisions, independently compiled before activation, with last-known-good
+  rollback.
+- Per-profile Shields controls and exact-host exceptions. Policy changes apply
+  on navigation or an explicit reload, avoiding silent destruction of active
+  forms or media sessions.
+- No default analytics upload, password-vault bridge, or Firefox Sync
+  implementation.
 
-### Portable backup
+## Engine boundary
 
-- Settings can export and import a versioned, portable JSON document containing regular profiles, spaces, tabs, Archive entries, bookmarks, history, settings and exact-host Shields exceptions.
-- The file is human-readable, unencrypted JSON and contains sensitive browsing data such as URLs, page titles and visit history. Keep exported files secure. “Portable” means a user-controlled Xanh iOS file; schema version 1 is not an Android backup or a general browser interchange format.
-- Import validates product/schema identity, engine-contract version, size and collection limits, UUID relationships, storage modes, canonical hostnames and HTTP(S) URLs before any state changes.
-- Unknown fields and fields associated with private, credential, cookie, cache or download data are rejected instead of being silently ignored.
-- Private and ephemeral state, Keychain credentials, URL credentials, cookies, cache, downloads, website data and local deletion-cleanup ledgers are excluded. Removing a regular profile from metadata during import uses a non-destructive synced tombstone, so it does not schedule deletion of that profile's existing website data or Keychain lock. A failed persistence write rolls the in-memory import back.
+`XanhWebView` is the app-facing embedding boundary. Its backend and fallback are
+both Apple system `WKWebView`; this repository does **not** bundle or claim a
+custom iOS browser engine.
 
-### Accessibility
+The compatibility contract is pinned in [`XANH_WEBVIEW.lock`](XANH_WEBVIEW.lock),
+while [`XANH_WEBKIT.lock`](XANH_WEBKIT.lock) records the Xanh product reference
+used for behavior alignment. CI verifies both locks and the Apple adapter
+contract. The detailed decisions and exclusions live in the
+[Xanh compatibility reference](docs/XANH_REFERENCE.md).
 
-- 48-point minimum controls, Dynamic Type-aware layouts, VoiceOver labels and actions, and iPad hardware-keyboard navigation.
-- Automated accessibility audits cover browser chrome, tab grid, library, and settings on iPhone and iPad Simulator lanes.
+## CloudKit boundary
 
-## Xanh reference audit
+Release builds can sync regular browser metadata through a private
+`NSPersistentCloudKitContainer` replica. The sync surface includes profiles,
+spaces, regular tabs, pinned state, Archive metadata, bookmarks, settings, and
+exact-host Shields exceptions. History sync is opt-in and limited to 90 days.
 
-The latest GitHub state of [`xanh-android`](https://github.com/LamPPKK/xanh-android) and [`xanh-webkit`](https://github.com/LamPPKK/xanh-webkit) was reviewed as reference material, not copied as implementation instructions.
+Cookies, cache, credentials, Keychain material, biometric state, snapshots,
+downloads, private tabs, private exceptions, and local website-data cleanup
+state never enter CloudKit. Debug and CI builds keep CloudKit disabled so
+unsigned Simulator runs remain deterministic.
 
-This pass adopted native URL sharing, explicit WebKit content-process recovery and a separately validated Xanh portable-backup format. It did not import Firefox Sync/password-vault code, the iOS 26 `WebPage` API, or Android System WebView/WPE adapters.
+## Portable backup
 
-The exact source commits, decision ledger, and post-beta candidates are recorded in [the Xanh reference audit](docs/XANH_REFERENCE.md).
-CI validates both engine lock files against those pinned repositories and the truthful Apple adapter contract.
+Settings can export and import a versioned Xanh iOS JSON document containing
+regular profiles, spaces, tabs, Archive entries, bookmarks, history, settings,
+and exact-host Shields exceptions. Imports validate product and schema identity,
+size and collection limits, URLs, hosts, storage modes, and UUID relationships
+before changing browser state.
+
+> **Sensitive-data warning:** a `.xanhbackup` file is human-readable,
+> **unencrypted JSON** and can contain URLs, page titles, and visit history.
+> Store and share it accordingly. Schema version 1 is a user-controlled Xanh
+> iOS backup; it is not an Android backup, Firefox Sync payload, encrypted vault,
+> or general browser interchange format.
+
+Private state, credentials, cookies, cache, downloads, website data, and local
+deletion-cleanup ledgers are excluded. Unknown or prohibited fields are rejected
+rather than silently accepted.
 
 ## Build and test
 
 Requirements:
 
-- macOS with Xcode 16 or newer and an iOS 18+ Simulator runtime.
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen) 2.46 or newer.
-- Python 3 for release and blocker tooling tests.
+- macOS with Xcode 16 or newer and an iOS 18+ Simulator runtime
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen) 2.46 or newer
+- Python 3 for verification and release tooling
+
+Generate the project and run the same combined unit/UI scheme used by CI:
 
 ```sh
 xcodegen generate
@@ -102,64 +154,76 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   -scheme XanhIOS \
   -destination "platform=iOS Simulator,id=$XANH_IPHONE_UDID" \
   CODE_SIGNING_ALLOWED=NO
-
-python3 -m unittest discover -s Tools/tests
 ```
 
-Debug and CI builds keep CloudKit and remote blocker downloads disabled so unsigned Simulator tests remain deterministic. Release builds enable both through generated Info.plist flags.
+Run the portable tooling and contract checks separately:
 
-## Blocker releases
+```sh
+python3 -m unittest discover -s Tools/tests
+python3 Tools/verify_engine_locks.py
+python3 Tools/release_evidence.py validate-corpus \
+  --input Release/evidence-v1.corpus.json
+```
 
-`Blocker/sources.json` pins EasyList and EasyPrivacy to exact upstream commits. `Tools/build_blocker.py` converts the supported network-rule subset and emits an unsupported-rule report. The protected `blocker-rules` workflow verifies the Ed25519 key pair, signs the canonical manifest, and publishes immutable source and artifact provenance.
+The [CI workflow](.github/workflows/ci.yml) also builds the adaptive iPad target
+and runs its accessibility and hardware-keyboard UI checks.
 
-Required protected secrets:
+## Accessibility
 
-- `BLOCKER_SIGNING_KEY_BASE64`
-- `BLOCKER_PUBLIC_KEY_BASE64`
+Xanh iOS uses Dynamic Type-aware layouts, VoiceOver labels and actions,
+44-point-or-larger touch targets, and iPad hardware-keyboard navigation.
+Automated audits cover browser chrome, tab grid, Library, and Settings on
+iPhone and iPad Simulator lanes. Physical-device VoiceOver, Dynamic Type, and
+keyboard checks remain part of the release gate.
 
-EasyList, EasyPrivacy, and derived artifacts retain GPL-3.0-or-later attribution. See [Blocker/README.md](Blocker/README.md).
+## Blocker and TestFlight releases
 
-## External TestFlight gate
+[`Blocker/sources.json`](Blocker/sources.json) pins EasyList and EasyPrivacy.
+The converter supports a reviewed subset of Adblock Plus syntax and reports
+unsupported rules instead of approximating them. Protected automation signs the
+canonical manifest and publishes source, checksum, signature, and unsupported-
+rule provenance. See [Blocker/README.md](Blocker/README.md).
 
-The protected `testflight` environment requires:
-
-- `APPLE_TEAM_ID`, `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_PRIVATE_KEY`, and `BLOCKER_PUBLIC_KEY_BASE64`;
-- `CLOUDKIT_SCHEMA_PROMOTED=true` only after the development schema is promoted to production;
-- manual approval before archive and upload.
-
-Release CI archives once, verifies the signature and production entitlements,
-exports exactly one safe-named regular IPA, inspects it, records its SHA-256
-checksum, validates it with App Store Connect, and uploads that same path only
-after rechecking the checksum. A successful upload also emits a strict
-[`release-evidence-v1.json`](Release/evidence-v1.schema.json) candidate that
-binds the IPA digest and size to the exact commit, workflow run, attempt, build
-number, validation result, and upload result. Candidate creation must rehash the
-IPA after upload and match both the digest and size locked before upload. The v1
-record always remains `candidate`; it never infers App Store processing or Beta
-App Review. The JSON Schema is structural, while the executable validator and
-[published invariant corpus](Release/evidence-v1.invariants.md) are normative
-for cross-field identity. This is a consistency record, not a standalone
-cryptographic attestation; trust it only with the referenced protected workflow
-artifact and separate Apple-side processing/review evidence.
-
-External Beta App Review, two-device iCloud isolation, physical-device accessibility, IPv6-only, memory-pressure, and stability checks remain release gates. Follow [Release/TESTFLIGHT.md](Release/TESTFLIGHT.md) and attach evidence to the exact uploaded IPA.
-
-WebKit remains the portfolio's release priority until this gate passes. Blink
-may continue protected-builder, provenance, policy, and other foundation work,
-but its Linux product promotion does not replace this TestFlight gate. XanhTab
-and `xanh-docker` follow their own hardware and OCI gates; their evidence
-must not be presented as WebKit beta progress.
+The protected TestFlight workflow verifies distribution signing, production
+entitlements, IPA identity, checksum, validation, upload, and candidate evidence
+for one exact artifact. A successful workflow upload does not itself prove App
+Store processing or Beta App Review. Before presenting a public beta, follow the
+full [external TestFlight gate](Release/TESTFLIGHT.md), including two-device
+iCloud isolation and physical iPhone/iPad verification.
 
 ## Repository map
 
 | Path | Responsibility |
 | --- | --- |
-| `App/` | SwiftUI shell, adaptive surfaces, commands, and app lifecycle |
-| `Sources/Browser/` | `WKWebView` sessions, navigation, native downloads, blocker application, recovery, and coordination |
-| `Sources/Domain/` | Stable browser models, URL policy, and session restoration |
-| `Sources/Persistence/` | Core Data and private CloudKit metadata replica |
+| `App/` | SwiftUI app lifecycle, browser shell, adaptive views, and commands |
+| `Sources/Browser/` | WebKit sessions, downloads, blocker application, recovery, and coordination |
+| `Sources/Domain/` | Browser models, URL policy, and session restoration |
+| `Sources/Persistence/` | Core Data, CloudKit metadata replica, and portable backup |
 | `Sources/Security/` | Keychain and LocalAuthentication boundaries |
-| `Blocker/` | Signed blocker manifest schema, provenance, and bundled rules |
-| `Tests/`, `UITests/` | Unit, integration, accessibility, and documentation-media tests |
-| `Tools/` | Blocker, release, entitlement, IPA, and Simulator verification tools |
-| `docs/` | GitHub Pages and architecture notes; current screenshots are pending verified recapture |
+| `Blocker/` | Blocker source pins, manifest schema, and bundled rules |
+| `Tests/`, `UITests/` | Unit, integration, accessibility, and keyboard tests |
+| `Tools/` | Contract, blocker, Simulator, entitlement, IPA, and release verification |
+| `docs/` | Compatibility notes, support, privacy, and GitHub Pages content |
+
+## Xanh Browser family
+
+| Repository | Role |
+| --- | --- |
+| [xanh-webkit](https://github.com/LamPPKK/xanh-webkit) | Multi-platform reference hosts, shared engine policies, and release gates |
+| [xanh-android](https://github.com/LamPPKK/xanh-android) | Native Android browser |
+| [xanh-ios](https://github.com/LamPPKK/xanh-ios) | Native iPhone and iPad browser — this repository |
+| [xanh-webview](https://github.com/LamPPKK/xanh-webview) | Cross-platform embedding API and backend contract |
+| [xanh-docker](https://github.com/LamPPKK/xanh-docker) | Containerized WPE remote-browser runtime |
+| [xanh-tab](https://github.com/LamPPKK/xanh-tab) | WPE-based appliance and tab surface |
+
+Each repository has its own platform boundary and release evidence. A passing
+Docker, Android, or Xanh Tab workflow is not evidence that the iOS TestFlight
+gate has passed.
+
+## License
+
+This repository does not currently include a project-wide license file. Until
+one is added, no general permission to copy, modify, or redistribute the Xanh
+iOS application code is granted. EasyList, EasyPrivacy, and their derived
+artifacts retain their GPL-3.0-or-later attribution and terms; see the
+[blocker license notes](Blocker/README.md).
